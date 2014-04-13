@@ -1,5 +1,5 @@
 <head>
-  <title>WeinbergCloud Beta</title>
+  <title>WeinbergCloud</title>
 </head>
 
 
@@ -9,7 +9,7 @@
 
 <div class = "row-fluid">
 <div class = "span4 offset4">
-<img src = "emwCloud.jpg">
+<img src = "/emwCloud.jpg">
 </div>
 </div>
 <p class = "text-center text-info">Mr. Weinberg's students have taken {{numOfReassessments}} reassessments so far this semester.</p>
@@ -18,7 +18,7 @@
     {{/if}}
 <div class = "row-fluid">
   <h2 class = "text-center">
-   {{>loggingIn}}
+   {{> loggingIn}}
   {{#unless currentUser}}
   <div class = "text-center">
   {{> loginButtons}}
@@ -55,10 +55,10 @@
       <li id = "signUp"><a href="#reassessSignUp" data-toggle="modal">Reassessment Sign-up</a></li>
       <li id = "myReassessments"><a href="/myReassessments/">My Reassessments</a></li>
       
-       
+        {{#if isEvan}}
         <li id = "allReassessments"><a href="/retakes/">All Reassessments</a></li>
         <li id = "allUsers"><a href="/allUsers/">All Users</a></li>
-        
+        {{/if}}
     </ul>
     <ul class = "nav pull-right"> {{> loginButtons}}</ul>
     <ul class = "nav pull-right">Reassessment Credits:{{>myCreditsBadge}}</ul>
