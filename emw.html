@@ -35,6 +35,7 @@
   {{> yield}}
   {{>reassessSignUp}}
   {{>reassessEdit}}
+  {{>editUserProfile}}
   {{/if}}
   </div>
 
@@ -333,11 +334,11 @@ My upcoming reassessments:
 </template>
 
 <template name = "allUsers">
-<div class = "span4 offset4">
-<table class = "table table-condensed">
+<div class = "span6 offset3">
+<table class = "table ">
 
 {{#each userProfiles}}
-<tr><td>Credits:{{>creditBadge}}</td><td>{{emails.[0].address}}</td><td><button class = "addCredit btn-small btn">Add Credit</button></td><td><button class = "removeCredit btn-small btn">Remove Credit</button></td></tr>
+<tr><td>Credits:{{>creditBadge}}</td><td>{{emails.[0].address}}</td>{{#if isEvan}}<td>{{profile.realName}}</td><td>{{profile.grade}}</td><td><button class = "editProfile btn btn-small">Edit Profile</button></td>{{/if}}<td><button class = "addCredit btn-small btn">Add Credit</button></td><td><button class = "removeCredit btn-small btn">Remove Credit</button></td></tr>
 {{/each}}
 </table>
 </div>
@@ -349,5 +350,52 @@ My upcoming reassessments:
 </template>
 <template name = "myCreditsBadge">
 <span class="badge badge-inverse">{{numberOfCredits}}</span>    
+
+</template>
+
+<template name = "editUserProfile">
+<div id="profileEdit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="profileLabel">User Profile: {{selectedUser}} </h3>
+  </div>
+  <div class="modal-body">
+  
+      
+<form class="form-horizontal">
+<div class="control-group">
+<label class = "control-label">Student Name:</label> 
+<div class = "controls">
+<input type = "text" id = "profileUserName" value = "{{userName}}">
+ </div>    
+ </div> 
+
+    
+<div class="control-group">
+<label class = "control-label">Grade:</label> 
+<div class = "controls">
+<select name = "profileUserGrade" id = "profileGrade">
+<option value ="0"  selected ="selected"></option>
+<option value="9" >Grade 9</option>
+<option value="10">Grade 10</option>
+<option value="11">Grade 11</option>
+<option value="12">Grade 12</option>
+
+</select>
+ </div>
+  </div>
+
+
+</form>  
+       
+</div>
+    
+<div class="modal-footer">
+    
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id = "updateProfile">Update Profile</button>
+  </div>
+</div>
+
 
 </template>
