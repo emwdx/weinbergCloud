@@ -111,7 +111,15 @@ if (Meteor.isClient) {
      numOfCredits = allCredits.length;
      return (numOfCredits>0)
     
-   }
+   },
+      isGrade9:function(){
+        
+     var is9 = (Meteor.user().profile.grade=='9');
+     var isEvan = (Meteor.user().emails[0].address=='eweinberg@scischina.org')
+     
+     return (is9|isEvan);
+        
+    }
    
       
   });
@@ -132,6 +140,7 @@ if (Meteor.isClient) {
 				day: $('body').find('[name=date]').val(),
 				completed: 'false',
 				user: Meteor.user().emails[0].address
+               
 
  }
  currentUser = Meteor.user();
@@ -154,6 +163,14 @@ Template.reassessEdit.helpers({
          today = new Date();
          return (today.getDay()==0|today.getDay()==6);
          
+    },
+    isGrade9:function(){
+        
+     var is9 = (Meteor.user().profile.grade=='9');
+     var isEvan = (Meteor.user().emails[0].address=='eweinberg@scischina.org')
+     
+     return (is9|isEvan);
+        
     }
       
     

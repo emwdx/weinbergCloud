@@ -9,3 +9,4 @@ iron-router
 bootstrap
 accounts-ui
 accounts-password
+force-ssl
