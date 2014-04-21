@@ -395,7 +395,7 @@ return '';}
 
 Template.loggingIn.helpers({
     
-isLoggingIn: Meteor.isLoggingIn
+isLoggingIn: Meteor.loggingIn
     
 });
 
