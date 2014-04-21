@@ -1,11 +1,11 @@
 /* CSS declarations go here */
-body{
-font-family:Futura;
-
+body {
+    font-family: Futura;
+    background-color: rgb(22, 56, 119);
+    color: #CCCCCC
 }
 
-.footer{
-height: 40px;
-
+.footer {
+    height: 40px
 }
 
