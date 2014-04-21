@@ -44,8 +44,10 @@ if (Meteor.isClient) {
       Meteor.subscribe('reassessments');
       Meteor.subscribe('users');
       Meteor.subscribe('credits');
-      
+            
   }   
+    
+ 
  Accounts.ui.config({ passwordSignupFields: 'EMAIL_ONLY'
  });
   
@@ -347,6 +349,19 @@ var currentUser = Meteor.users.findOne({_id:currentlySelectedID});
 Meteor.users.update({_id:currentUser._id}, {$set:profileObject});
 $('#profileEdit').modal('hide');
     
+},
+'click #profileDelete': function(e){
+    
+ e.preventDefault();
+
+if(confirm("Are you sure you want to delete this user?")){
+var currentlySelectedID = Session.get("currentlySelectedID");
+var currentUser = Meteor.users.findOne({_id:currentlySelectedID});    
+Meteor.users.remove({_id:currentUser._id});    
+$('#profileEdit').modal('hide');
+}
+    
+    
 }
     
         
@@ -443,6 +458,11 @@ Meteor.users.allow({
       return true;
       
       
+      
+  },
+  remove: function(){
+      
+  return (Meteor.user().emails[0].address=='eweinberg@scischina.org');      
       
   }
     

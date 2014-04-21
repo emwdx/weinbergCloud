@@ -1,11 +1,15 @@
 /* CSS declarations go here */
-body {
-    font-family: Futura;
-    background-color: rgb(22, 56, 119);
-    color: #CCCCCC
+html{
+background:rgb(22, 56, 119); 
+    
+    
+    
 }
 
-.footer {
-    height: 40px
+
+body {
+    font-family: Futura;
+    background:transparent;
+    color: #CCCCCC
 }
 
