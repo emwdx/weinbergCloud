@@ -168,11 +168,14 @@ Template.reassessEdit.helpers({
     },
     isGrade9:function(){
         
+     if(Meteor.user().profile){
      var is9 = (Meteor.user().profile.grade=='9');
      var isEvan = (Meteor.user().emails[0].address=='eweinberg@scischina.org')
-     
+     }
+     if(is9){
      return (is9|isEvan);
-        
+     }
+     else{ return false}
     }
       
     

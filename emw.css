@@ -13,3 +13,19 @@ body {
     color: #CCCCCC
 }
 
+#notEnoughCredits{
+    
+ color:black;   
+    
+}
+#reassessmentCreditsBar{
+    
+ color:rgb(100,100,100);
+ margin: 10px;
+    
+}
+.darkText{
+    
+    color:rgb(100,100,100);
+    
+}
