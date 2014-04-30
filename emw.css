@@ -1,11 +1,31 @@
 /* CSS declarations go here */
+html{
+background:rgb(22, 56, 119); 
+    
+    
+    
+}
+
+
 body {
     font-family: Futura;
-    background-color: rgb(22, 56, 119);
+    background:transparent;
     color: #CCCCCC
 }
 
-.footer {
-    height: 40px
+#notEnoughCredits{
+    
+ color:black;   
+    
 }
-
+#reassessmentCreditsBar{
+    
+ color:rgb(100,100,100);
+ margin: 10px;
+    
+}
+.darkText{
+    
+    color:rgb(100,100,100);
+    
+}

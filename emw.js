@@ -44,8 +44,10 @@ if (Meteor.isClient) {
       Meteor.subscribe('reassessments');
       Meteor.subscribe('users');
       Meteor.subscribe('credits');
-      
+            
   }   
+    
+ 
  Accounts.ui.config({ passwordSignupFields: 'EMAIL_ONLY'
  });
   
@@ -166,11 +168,14 @@ Template.reassessEdit.helpers({
     },
     isGrade9:function(){
         
+     if(Meteor.user().profile){
      var is9 = (Meteor.user().profile.grade=='9');
      var isEvan = (Meteor.user().emails[0].address=='eweinberg@scischina.org')
-     
+     }
+     if(is9){
      return (is9|isEvan);
-        
+     }
+     else{ return false}
     }
       
     
@@ -347,6 +352,19 @@ var currentUser = Meteor.users.findOne({_id:currentlySelectedID});
 Meteor.users.update({_id:currentUser._id}, {$set:profileObject});
 $('#profileEdit').modal('hide');
     
+},
+'click #profileDelete': function(e){
+    
+ e.preventDefault();
+
+if(confirm("Are you sure you want to delete this user?")){
+var currentlySelectedID = Session.get("currentlySelectedID");
+var currentUser = Meteor.users.findOne({_id:currentlySelectedID});    
+Meteor.users.remove({_id:currentUser._id});    
+$('#profileEdit').modal('hide');
+}
+    
+    
 }
     
         
@@ -443,6 +461,11 @@ Meteor.users.allow({
       return true;
       
       
+      
+  },
+  remove: function(){
+      
+  return (Meteor.user().emails[0].address=='eweinberg@scischina.org');      
       
   }
     

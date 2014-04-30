@@ -9,7 +9,7 @@
 
 <div class = "row-fluid">
 <div class = "span4 offset4">
-<img src = "/emwCloud.jpg">
+<img src = "/emwCloud.png">
 </div>
 </div>
 <p class = "text-center text-info">Mr. Weinberg's students have taken {{numOfReassessments}} reassessments so far this semester.</p>
@@ -41,8 +41,7 @@
 
 
 
-<div class = "footer">
-</div>
+
 </template>
 
 
@@ -62,7 +61,7 @@
         {{/if}}
     </ul>
     <ul class = "nav pull-right"> {{> loginButtons}}</ul>
-    <ul class = "nav pull-right">Reassessment Credits:{{>myCreditsBadge}}</ul>
+    <ul class = "nav pull-right" id = "reassessmentCreditsBar">Reassessment Credits:{{>myCreditsBadge}}</ul>
   </div>
 </div>
 
@@ -71,7 +70,7 @@
 
 <template name = "reassessSignUp">
     
-<div id="reassessSignUp" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="reassessSignUp" class="modal hide fade darkText" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel">Sign-up for Reassessment:</h3>  
@@ -163,14 +162,17 @@
 
 </form>  
 {{/if}}
+
 {{#unless hasEnoughCredits}}
+<div id = "notEnoughCredits">
     <span class = "text-error">You do not have enough credits for this reassessment. How do you earn more?</span>
     <ul>
     <li>Show Mr. Weinberg practice questions you have completed for this standard since your last assessment. </li>
     <li>See Mr. Weinberg for tutoring.</li>
     <li>Show Mr. Weinberg independent work you have done during class related to this standard since your last assessment.</li>
     </ul>
-    {{/unless}}       
+</div>
+{{/unless}}       
 </div>
     
 <div class="modal-footer">
@@ -361,10 +363,10 @@ My upcoming reassessments:
 </template>
 
 <template name = "editUserProfile">
-<div id="profileEdit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="profileEdit" class="modal hide fade darkText" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="profileLabel">User Profile: {{selectedUser}} </h3>
+    <h3 id="profileLabel">User Profile: {{selectedUser}} <button class = "btn" id = "profileDelete">Delete</button></h3>
   </div>
   <div class="modal-body">
   
