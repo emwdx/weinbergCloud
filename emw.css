@@ -29,3 +29,35 @@ body {
     color:rgb(100,100,100);
     
 }
+
+#addSurvey{
+    
+ margin:20px;
+ padding:10px;
+    
+}
+
+.addSurveyQuestionText{
+    
+ width:400px;
+
+
+}
+
+#surveyContainer{
+    
+ margin:20px;
+ padding:10px;
+ border: 1px white solid;
+ border-radius: 5px;
+
+    
+    
+}
+
+.surveyQuestionTextArea{
+    
+ width:200px;   
+    
+    
+}

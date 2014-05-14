@@ -408,3 +408,82 @@ My upcoming reassessments:
 
 
 </template>
+
+<template name = "surveyItem">
+
+<h3>{{itemText}}</h3>
+<input type = "text" name = "surveyQ{{itemNumber}}">
+</template>
+
+<template name = "currentSurvey">
+
+<div class = "span8 offset2">
+<div class = "row-fluid">
+    
+    {{>surveyItem}}
+</div>
+</div>
+
+</template>
+
+<template name = "addSurvey">
+<div class = "span8 offset2" id = "addSurvey">
+<div class = "row-fluid">
+Survey Title:
+<input type = "text" name = "addSurveyTitle" id = "addSurveyTitle"> Anonymous Survey? <input type = "checkbox" id = "addSurveyAnonymous"><p></p>Survey Alias:<input type = "text" name = "addSurveyAlias" id = "addSurveyAlias">
+Number of questions:
+<input type = "number" min = "0" name = "addSurveyLength" id = "addSurveyLength"><p></p>
+
+</div>
+
+    {{#each Questions}}
+<div class = "row-fluid">
+    {{>addSurveyTextInput}}
+</div>
+    {{/each}}
+<div class = "row-fluid">
+<button id = "addSurveySubmit">Create Survey</button>
+</div>
+</div>
+</template>
+
+<template name = "addSurveyTextInput">
+Question Text:<p></p>
+<input type = "text" name = "addSurveyQuestionText" id = "surveyQ{{index}}" class = " input addSurveyQuestionText">
+<select class = "addSurveyQuestionType">
+<option value = '1'>Text</option>  
+<option value = '2'>Paragraph</option>
+    
+</select>
+<p></p>
+</template>
+
+<template name = "showSurvey">
+
+<div id = "surveyContainer">
+
+<h2>{{title}}</h2>
+    {{#if isAnonymous}}
+    This survey is anonymous. Even though you are logged in, WeinbergCloud will not record your identity when you submit your survey.
+    {{/if}}
+    {{#unless isAnonymous}}
+    This survey will be recorded with your username.
+    {{/unless}}
+    {{>surveyShowItem questions}}
+</div>
+
+
+</template>
+
+<template name = "surveyShowItem">
+    {{#each questions}}
+    <h4>{{index}}. {{text}}</h4>   
+    {{#if isText}}
+    <input type = "text" class = "showSurveyQuestionText" id = "Q{{index}}">
+    {{/if}}
+    {{#unless isText}}
+    <textarea class = "showSurveyQuestionTextArea" id = "Q{{index}}" rows = "6" cols = "30"></textarea>
+    {{/unless}}
+    {{/each}}
+  
+</template>

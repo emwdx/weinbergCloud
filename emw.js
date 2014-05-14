@@ -1,8 +1,8 @@
-Responses = new Meteor.Collection('responses')
-Standards = new Meteor.Collection('standards')
-Reassessments = new Meteor.Collection('reassessments')
-Credits = new Meteor.Collection('credits');
-
+var Responses = new Meteor.Collection('responses')
+var Standards = new Meteor.Collection('standards')
+var Reassessments = new Meteor.Collection('reassessments')
+ Credits = new Meteor.Collection('credits');
+var Surveys = new Meteor.Collection('surveys');
 
 var getFiveDays = function(){
       
@@ -60,11 +60,19 @@ if (Meteor.isClient) {
       this.route('showNextRetakes', {path: '/retakes/'});
       this.route('reassessEdit', {path: '/edit/'});
       this.route('allUsers', {path: '/allUsers/'});
+      this.route('currentSurvey',{path:'/survey/calcEOY/'});
+      this.route('addSurvey',{path:'/addSurvey/'});
+      this.route('showSurvey',{path:'/survey/:alias/',
+                              data: function(){
+                                  var currentSurvey =  Surveys.findOne({alias:this.params.alias});
+                                  return currentSurvey;},
+                              waitOn: function(){return Meteor.subscribe('surveys',{limit:this.params.alias})}});
       
       
   });
   
   Session.set('currentDay',$('#selectDate').val());
+  Session.set("addSurveyNumberOfQuestions",1);
   
   Template.mainContent.helpers({
   
@@ -416,8 +424,68 @@ Template.loggingIn.helpers({
 isLoggingIn: Meteor.loggingIn
     
 });
+Template.addSurvey.helpers({
+Questions: function(){
+    var questions = [];
+    var numOfQuestions = parseInt(Session.get("addSurveyNumberOfQuestions"));
+    for(var i = 1;i<=numOfQuestions;i++){
+     questions.push({index:i,text:''});   
+    }
+    return questions;
+    
+}
+    
+});
+Template.addSurvey.events({
+    'change #addSurveyLength':function(){
+     
+        Session.set("addSurveyNumberOfQuestions",$('#addSurveyLength').val());
+        
+    },
+    'click #addSurveySubmit':function(e){
+     e.preventDefault();
+     var surveyObject = {}
+     var surveyTitle = $('#addSurveyTitle').val();
+     var surveyAlias = $('#addSurveyAlias').val();
+     var surveyAnonymous = $('#addSurveyAnonymous').prop('checked');
+     var numOfQuestions = parseInt(Session.get("addSurveyNumberOfQuestions"));
+     var questionText = $('.addSurveyQuestionText');
+     var questionTypes = $('.addSurveyQuestionType');
+     surveyObject.title = surveyTitle;
+     surveyObject.alias = surveyAlias;
+     surveyObject.length = numOfQuestions;
+     surveyObject.isAnonymous = surveyAnonymous;
+     surveyObject.questions = [];
+     for(var i = 0;i<=numOfQuestions-1;i++){
+     currentQuestion = {text:$(questionText[i]).val(),
+                        type:$(questionTypes[i]).val(),index:(i+1)};
+     surveyObject.questions.push(currentQuestion);
+         
+     }
+     console.log(surveyObject); 
+     Surveys.insert(surveyObject);
+    }
+    
+});
 
+Template.showSurvey.helpers({
+    questions:function(){
+    //console.log(this)
+    return this;
+    }
+        
+    
+        
+});
 
+Template.surveyShowItem.helpers({
+   isText:function(){
+       
+    return (this.type=='1')   
+       
+   }
+    
+});
     
 }
 
@@ -453,7 +521,16 @@ Meteor.publish('credits', function() {
      return Credits.find({});
      }
      else{return null};
-}); 
+});
+Meteor.publish('surveys', function() { 
+     
+     
+     
+     if(this.userId){
+     return Surveys.find({});
+     }
+     else{return null};
+});
     
 Meteor.users.allow({
     
