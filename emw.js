@@ -2,7 +2,7 @@ Responses = new Meteor.Collection('responses')
 Standards = new Meteor.Collection('standards')
 Reassessments = new Meteor.Collection('reassessments')
 Credits = new Meteor.Collection('credits');
-
+WeinbergCash = new Meteor.Collection('weinbergcash');
 
 var getFiveDays = function(){
       
@@ -60,6 +60,8 @@ if (Meteor.isClient) {
       this.route('showNextRetakes', {path: '/retakes/'});
       this.route('reassessEdit', {path: '/edit/'});
       this.route('allUsers', {path: '/allUsers/'});
+      this.route('gamesOfChance',{path:'/games/'});
+      this.route('allWBCTotals',{path:'/wbTotals/'});
       
       
   });
@@ -417,7 +419,116 @@ isLoggingIn: Meteor.loggingIn
     
 });
 
+Template.gamesOfChance.helpers({
+    
+numOfWB: function(){
+ if(Meteor.user().wbBalance){   
+ return parseFloat(Meteor.user().wbBalance).toFixed(2);   
+ }
+else{
+ return null;   
+    
+}
+}
+    
+})
 
+Template.gamesOfChance.events({
+    
+'click #bet2x':function(e){
+ e.preventDefault();
+ var bet = $('#myBet').val();
+ if(bet>0){
+ var choice = Random.choice([1,0]);
+ var currentUser = Meteor.user();
+ var result = 0;
+ if(choice==1){
+  result = 2*bet;
+      
+ }
+else{
+ result = 0;
+}
+var newBalance = currentUser.wbBalance - bet +result;
+ Meteor.users.update({_id:currentUser._id},{$set:{wbBalance:newBalance}});
+ var transactionObject = {
+     user: currentUser.profile.realName,
+     bet:bet,
+     result:result,
+     time: new Date()
+ 
+ };
+
+WeinbergCash.insert(transactionObject);
+ }
+},
+'click #bet3x':function(e){
+ e.preventDefault();
+ var bet = $('#myBet').val();
+ if(bet>0){
+ var choice = Random.choice([1,1,1,0,0,0,0,0,0,0]);
+ var currentUser = Meteor.user();
+ var result = 0;
+ if(choice==1){
+  result = 3*bet;
+      
+ }
+else{
+ result = 0;
+}
+var newBalance = currentUser.wbBalance - bet + result;
+ Meteor.users.update({_id:currentUser._id},{$set:{wbBalance:newBalance}});
+ var transactionObject = {
+     user: currentUser.profile.realName,
+     bet:bet,
+     result:result,
+     time: new Date()
+ 
+ };
+
+WeinbergCash.insert(transactionObject);
+ }
+},
+'click #bet4x':function(e){
+ e.preventDefault();
+ var bet = $('#myBet').val();
+ if(bet>0){
+ var choice = Random.choice([1,0,0,0,0]);
+ var currentUser = Meteor.user();
+ var result = 0;
+ if(choice==1){
+  result = 4*bet;
+      
+ }
+else{
+ result = 0;
+}
+var newBalance = currentUser.wbBalance - bet +result;
+ Meteor.users.update({_id:currentUser._id},{$set:{wbBalance:newBalance}});
+ var transactionObject = {
+     user: currentUser.profile.realName,
+     bet:bet,
+     result:result,
+     time: new Date()
+ 
+ };
+
+WeinbergCash.insert(transactionObject);
+ }
+}
+    
+    
+});
+Template.allWBCTotals.helpers({
+   
+WBProfiles: Meteor.users.find({"profile.grade":"10"},{sort:{wbBalance:-1}}),
+numOfWB: function(){
+ return parseFloat(this.wbBalance).toFixed(2);    
+}
+  
+
+    
+});   
     
 }
 
@@ -454,6 +565,11 @@ Meteor.publish('credits', function() {
      }
      else{return null};
 }); 
+Meteor.publish('weinbergcash',function(){
+    
+  return true;  
+    
+})
     
 Meteor.users.allow({
     
@@ -470,4 +586,5 @@ Meteor.users.allow({
   }
     
 })
+
 }

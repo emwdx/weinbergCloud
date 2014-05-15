@@ -54,6 +54,7 @@
     <ul class="nav">
       <li id = "signUp"><a href="#reassessSignUp" data-toggle="modal">Reassessment Sign-up</a></li>
       <li id = "myReassessments"><a href="/myReassessments/">My Reassessments</a></li>
+      <li id = "games"><a href = "/games/">Games</a></li>
       
         {{#if isEvan}}
         <li id = "allReassessments"><a href="/retakes/">All Reassessments</a></li>
@@ -104,6 +105,7 @@
 <option value="7">Unit 7</option>
 <option value="8" >Unit 8</option>
 <option value="9">Unit 9</option>
+<option value="10">Unit 10</option>
 
 </select>
  </div>
@@ -224,6 +226,7 @@
 <option value="7">Unit 7</option>
 <option value="8" >Unit 8</option>
 <option value="9">Unit 9</option>
+<option value="10">Unit 10</option>
 
 
 </select>
@@ -406,5 +409,39 @@ My upcoming reassessments:
   </div>
 </div>
 
+
+</template>
+<template name = "gamesOfChance">
+
+<h1>You currently have ${{numOfWB}} of WeinbergCash.</h1>
+<span class = "text-info">Note: The current real world value of $1.00 in WeinbergCash is 0 RMB.</span>
+<hr>
+You can win more by choosing to make one of the wagers below:
+ <p>
+<h3>Your bet:</h3>    
+<input type = "number" id = "myBet" placeholder = "How much do you want to bet?" min = "0.00" max = "{{numOfWB}}">    
+    
+    </p>
+    <p>
+<button class = "btn btn-primary" id = "bet2x">50% probability of 2x my bet</button>
+<button class = "btn btn-primary" id = "bet3x">30% probability of 3x my bet</button>
+<button class = "btn btn-primary" id = "bet4x">20% probability of 4x my bet</button>
+    </p>
+   
+    
+
+
+
+</template>
+
+<template name = "allWBCTotals">
+<div class = "span6 offset3">
+<table class = "table ">
+
+{{#each WBProfiles}}
+<tr><td><h3>{{profile.realName}}</h3></td><td><h3>${{numOfWB}}</h3></td></tr>
+{{/each}}
+</table>
+</div>
 
 </template>
