@@ -419,13 +419,13 @@ My upcoming reassessments:
 You can win more by choosing to make one of the wagers below:
  <p>
 <h3>Your bet:</h3>    
-<input type = "number" id = "myBet" placeholder = "How much do you want to bet?" min = "0.00" max = "{{numOfWB}}">    
+<input type = "number" id = "myBet" placeholder = "How much do you want to bet?" min = "0.00" max = "{{numOfWB}}" step="0.001">    
     
     </p>
     <p>
-<button class = "btn btn-primary" id = "bet2x">50% probability of 2x my bet</button>
-<button class = "btn btn-primary" id = "bet3x">30% probability of 3x my bet</button>
-<button class = "btn btn-primary" id = "bet4x">20% probability of 4x my bet</button>
+<button class = "btn btn-primary" id = "bet2x">50% probability of winning 2x your bet<br>Mr. Weinberg taxes your winnings 5%</button>
+<button class = "btn btn-primary" id = "bet3x">30% probability of winning 3x your bet<br>Mr. Weinberg taxes your winnings 2%</button>
+<button class = "btn btn-primary" id = "bet4x">25% probability of winning 4x your bet<br> No Weinberg tax!</button>
     </p>
    
     
@@ -436,6 +436,7 @@ You can win more by choosing to make one of the wagers below:
 
 <template name = "allWBCTotals">
 <div class = "span6 offset3">
+<p class = "text-center">WeinbergCash Totals:</p>
 <table class = "table ">
 
 {{#each WBProfiles}}
