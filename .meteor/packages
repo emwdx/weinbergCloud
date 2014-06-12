@@ -4,9 +4,10 @@
 # but you can also edit it by hand.
 
 standard-app-packages
-insecure
 iron-router
 bootstrap
 accounts-ui
 accounts-password
 force-ssl
+insecure
+underscore

@@ -29,9 +29,10 @@
   </div>
   {{#if currentUser}}
   <div class = "text-center">
- 
+      
   </div>
   {{> studentOptionsBar}}
+    {{>announcements}}
   {{> yield}}
   {{>reassessSignUp}}
   {{>reassessEdit}}
@@ -51,10 +52,14 @@
 <div class="navbar">
   <div class="navbar-inner">
     <a class="brand" href="/">Students:</a>
+      
     <ul class="nav">
       <li id = "signUp"><a href="#reassessSignUp" data-toggle="modal">Reassessment Sign-up</a></li>
       <li id = "myReassessments"><a href="/myReassessments/">My Reassessments</a></li>
-      
+      <li id = "games"><a href = "/games/">Games</a></li>
+        {{#if showReview}}
+      <li id = "review"><a href = "/review/">Review</a></li>
+        {{/if}}
         {{#if isEvan}}
         <li id = "allReassessments"><a href="/retakes/">All Reassessments</a></li>
         <li id = "allUsers"><a href="/allUsers/">All Users</a></li>
@@ -104,6 +109,7 @@
 <option value="7">Unit 7</option>
 <option value="8" >Unit 8</option>
 <option value="9">Unit 9</option>
+<option value="10">Unit 10</option>
 
 </select>
  </div>
@@ -224,6 +230,7 @@
 <option value="7">Unit 7</option>
 <option value="8" >Unit 8</option>
 <option value="9">Unit 9</option>
+<option value="10">Unit 10</option>
 
 
 </select>
@@ -254,8 +261,8 @@
 <select name = "time">
 <option value ="0"  ></option>
 <option value="Before School" >Before School</option>
-<option value="During Lunch" >During Lunch</option>
-{{#if isGrade9}}<option value="In-Class Quiz" >In-Class Quiz</option>{{/if}}
+<option value="During Lunch" >Beginning of Lunch</option>
+<option value="In-Class Quiz" >In-Class Quiz</option>
 <option value="After School">After School</option>
 
 
@@ -409,6 +416,7 @@ My upcoming reassessments:
 
 </template>
 
+
 <template name = "surveyItem">
 
 <h3>{{itemText}}</h3>
@@ -422,9 +430,44 @@ My upcoming reassessments:
     
     {{>surveyItem}}
 </div>
+=======
+<template name = "gamesOfChance">
+
+<h1>You currently have ${{numOfWB}} of WeinbergCash.</h1>
+<span class = "text-info">Note: The current real world value of $1.00 in WeinbergCash is 0 RMB.</span>
+<hr>
+You can win more by choosing to make one of the wagers below:
+ <p>
+<h3>Your bet:</h3>    
+<input type = "number" id = "myBet" placeholder = "How much do you want to bet?" min = "0.00" max = "{{numOfWB}}" step="0.001">    
+    
+    </p>
+    <p>
+<button class = "btn btn-primary" id = "bet2x">50% probability of winning 2x your bet<br>Mr. Weinberg taxes your winnings 5%</button>
+<button class = "btn btn-primary" id = "bet3x">30% probability of winning 3x your bet<br>Mr. Weinberg taxes your winnings 2%</button>
+<button class = "btn btn-primary" id = "bet4x">25% probability of winning 4x your bet<br> No Weinberg tax!</button>
+    </p>
+   
+    
+
+
+
+</template>
+
+<template name = "allWBCTotals">
+<div class = "span6 offset3">
+<p class = "text-center">WeinbergCash Totals:</p>
+<table class = "table ">
+
+{{#each WBProfiles}}
+<tr><td><h3>{{profile.realName}}</h3></td><td><h3>${{numOfWB}}</h3></td></tr>
+{{/each}}
+</table>
+>>>>>>> development
 </div>
 
 </template>
+
 
 <template name = "addSurvey">
 <div class = "span8 offset2" id = "addSurvey">
@@ -487,3 +530,54 @@ Question Text:<p></p>
     {{/each}}
   
 </template>
+=======
+<template name = "announcements">
+<div class = "span11 offset1">
+    {{{currentAnnouncement}}}
+   
+</div>
+</template>
+
+<template name = "setAnnouncement">
+<div class = "span11 offset1">
+<input type = 'text' id = 'announcementText'>
+<button class = 'btn btn-primary' id = 'submitAnnouncementButton'>Set announcement</button>     
+    
+</div>
+</template>
+
+<template name = "reviewpages">
+    
+<div class = "span6 offset2">
+My Standard: <input type = 'text' id = 'reviewStandardText' placeholder = "Example: 7.2" value = {{myValue}}>  <p></p>  
+My URL: <input type = 'text' id = "reviewURL" placeholder = "Paste the address of your blog post here." value = "{{myPage}}"><p></p>
+Place this code somewhere in your blog post. Other students will need this code to vote for your page:<h4 class = "text-warning">{{myCode}}</h4>
+<button id = "submitReviewPage">Submit my URL</button>
+    <hr>
+    
+    {{#each reviewpage}}
+    {{#if shouldShow}}
+    {{>postItem}}
+    {{/if}}
+    {{/each}}
+</div>    
+</template>
+    
+<template name="postItem">
+
+  <div class="post">
+      
+     <a href="#" class="upvote btn"> {{#unless hasVoted}}⬆{{/unless}} {{#if hasVoted}}<i class = "icon-ok"></i>{{/if}}</a> 
+
+<span class="badge badge-inverse">{{votes}}</span>    
+
+<a href="{{url}}" target="_blank">Standard {{standard}}</a> -  submitted by {{author}} {{#if weinbergApproved}} <i class = "icon-ok"></i>WB{{/if}}
+      {{#if isWeinberg}} <span class = "reviewCode">{{_id}}</span>{{/if}}
+      
+     
+       
+ 
+    
+  </div>
+</template>
+

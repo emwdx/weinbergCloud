@@ -1,8 +1,12 @@
-var Responses = new Meteor.Collection('responses')
-var Standards = new Meteor.Collection('standards')
-var Reassessments = new Meteor.Collection('reassessments')
- Credits = new Meteor.Collection('credits');
-var Surveys = new Meteor.Collection('surveys');
+
+Responses = new Meteor.Collection('responses')
+Standards = new Meteor.Collection('standards')
+Reassessments = new Meteor.Collection('reassessments')
+Credits = new Meteor.Collection('credits');
+WeinbergCash = new Meteor.Collection('weinbergcash');
+systemVariables = new Meteor.Collection('systemVariables');
+ReviewPages = new Meteor.Collection('reviewpages');
+Surveys = new Meteor.Collection('surveys');
 
 var getFiveDays = function(){
       
@@ -44,6 +48,8 @@ if (Meteor.isClient) {
       Meteor.subscribe('reassessments');
       Meteor.subscribe('users');
       Meteor.subscribe('credits');
+      Meteor.subscribe('systemVariables');
+      Meteor.subscribe('reviewpages');
             
   }   
     
@@ -60,6 +66,7 @@ if (Meteor.isClient) {
       this.route('showNextRetakes', {path: '/retakes/'});
       this.route('reassessEdit', {path: '/edit/'});
       this.route('allUsers', {path: '/allUsers/'});
+
       this.route('currentSurvey',{path:'/survey/calcEOY/'});
       this.route('addSurvey',{path:'/addSurvey/'});
       this.route('showSurvey',{path:'/survey/:alias/',
@@ -67,6 +74,12 @@ if (Meteor.isClient) {
                                   var currentSurvey =  Surveys.findOne({alias:this.params.alias});
                                   return currentSurvey;},
                               waitOn: function(){return Meteor.subscribe('surveys',{limit:this.params.alias})}});
+
+      this.route('gamesOfChance',{path:'/games/'});
+      this.route('allWBCTotals',{path:'/wbTotals/'});
+      this.route('setAnnouncement',{path:'setAnnouncement'});
+      this.route('reviewpages',{path:'/review/'});
+
       
       
   });
@@ -101,6 +114,11 @@ if (Meteor.isClient) {
           
        return (Meteor.user().emails[0].address=='eweinberg@scischina.org');  
           
+          
+      },
+      showReview:function(){
+          
+          return (Meteor.user().profile.grade=='9')||(Meteor.user().profile.grade=='10')
           
       }
       
@@ -168,7 +186,18 @@ if (Meteor.isClient) {
 Template.reassessEdit.helpers({
     
     daysObject: getFiveDays,
-    currentDate: Session.get('currentReassessmentDay'),
+    currentDate: function(){
+        
+    var currentReassessmentID = Session.get('currentReassessmentID');
+    var currentReassessment = Reassessments.findOne({_id:currentReassessmentID});
+    if(currentReassessment){
+    return currentReassessment.day;
+    }
+        else{return null;}
+        
+        
+        
+    },
     isWeekend: function(){
          today = new Date();
          return (today.getDay()==0|today.getDay()==6);
@@ -225,11 +254,17 @@ Template.myReassessments.events({
     'click .cancelReassessment': function(e){
     e.preventDefault(); 
     currentUser = Meteor.user();
+    if(currentUser.emails[0].address=='eweinberg@scischina.org'){
+    currentCredit = Credits.findOne({user:this.user, used:1});    
+    Credits.update({_id:currentCredit._id},{$set:{used:0}});      
+    }
+    else{
     currentCredit = Credits.findOne({user:currentUser.emails[0].address, used:1});
     Credits.update({_id:currentCredit._id},{$set:{used:0}});   
   
-    Reassessments.remove({_id:this._id});
-        
+    
+    }
+     Reassessments.remove({_id:this._id});
         
     },
     'click .editReassessment': function(e){
@@ -278,7 +313,7 @@ Template.showNextRetakes.events({
     'click .cancelReassessment': function(e){
     e.preventDefault();
     currentUser = Meteor.user();
-    currentCredit = Credits.findOne({user:currentUser.emails[0].address, used:1});
+    currentCredit = Credits.findOne({user:this.user, used:1});
     Credits.update({_id:currentCredit._id},{$set:{used:0}});   
   
     Reassessments.remove({_id:this._id});
@@ -468,6 +503,7 @@ Template.addSurvey.events({
     
 });
 
+
 Template.showSurvey.helpers({
     questions:function(){
     //console.log(this)
@@ -478,6 +514,323 @@ Template.showSurvey.helpers({
         
 });
 
+
+Template.gamesOfChance.helpers({
+    
+numOfWB: function(){
+ if(Meteor.user().wbBalance){   
+ return parseFloat(Meteor.user().wbBalance).toFixed(2);   
+ }
+else{
+ return null;   
+    
+}
+}
+    
+})
+
+Template.gamesOfChance.events({
+    
+'click #bet2x':function(e){
+ e.preventDefault();
+ fee = 0.05;
+ var currentUser = Meteor.user();
+ var currentBalance = currentUser.wbBalance;
+ var bet = parseFloat($('#myBet').val());
+ if(bet>0&&(bet<currentBalance)&&currentBalance>0){
+ var choice = Random.choice([1,0]);
+ 
+ var result = 0;
+ if(choice==1){
+  result = 2*bet;
+      
+ }
+else{
+ result = 0;
+}
+var newBalance = currentUser.wbBalance - bet +(1-fee)*result;
+ Meteor.call('giveEMWCash',fee*result);
+ Meteor.users.update({_id:currentUser._id},{$set:{wbBalance:newBalance}});
+ var transactionObject = {
+     user: currentUser.profile.realName,
+     bet:bet,
+     payoff:'2x',
+     result:(result-bet),
+     time: new Date()
+ 
+ };
+
+WeinbergCash.insert(transactionObject);
+ }
+},
+'click #bet3x':function(e){
+ e.preventDefault();
+ fee = 0.02;
+ var currentUser = Meteor.user();
+ var currentBalance = currentUser.wbBalance;
+ var bet = parseFloat($('#myBet').val());
+ if(bet>0&&(bet<currentBalance)&&currentBalance>0){
+ var choice = Random.choice([1,1,1,0,0,0,0,0,0,0]);
+ 
+ var result = 0;
+ if(choice==1){
+  result = 3*bet;
+      
+ }
+else{
+ result = 0;
+}
+var newBalance = currentUser.wbBalance - bet + (1-fee)*result;
+  Meteor.call('giveEMWCash',fee*result);
+ Meteor.users.update({_id:currentUser._id},{$set:{wbBalance:newBalance}});
+ var transactionObject = {
+     user: currentUser.profile.realName,
+     bet:bet,
+     payoff:'3x',
+     result:(result-bet),
+     time: new Date()
+ 
+ };
+
+WeinbergCash.insert(transactionObject);
+ }
+},
+'click #bet4x':function(e){
+ fee = 0;
+ e.preventDefault();
+ var currentUser = Meteor.user();
+ var currentBalance = currentUser.wbBalance;
+ var bet = parseFloat($('#myBet').val());
+ if(bet>0&&(bet<currentBalance)&&currentBalance>0){
+ var choice = Random.choice([1,0,0,0]);
+ 
+ var result = 0;
+ if(choice==1){
+  result = 4*bet;
+      
+ }
+else{
+ result = 0;
+}
+var newBalance = currentUser.wbBalance - bet +(1-fee)*result;
+ Meteor.call('giveEMWCash',fee*result);
+ Meteor.users.update({_id:currentUser._id},{$set:{wbBalance:newBalance}});
+ var transactionObject = {
+     user: currentUser.profile.realName,
+     bet:bet,
+     payoff:'4x',
+     result:(result-bet),
+     time: new Date()
+ 
+ };
+
+WeinbergCash.insert(transactionObject);
+ }
+}
+    
+    
+});
+Template.allWBCTotals.helpers({
+   
+WBProfiles: Meteor.users.find({},{sort:{wbBalance:-1}}),
+numOfWB: function(){
+ return parseFloat(this.wbBalance).toFixed(2);    
+}
+  
+
+    
+});   
+
+Template.announcements.helpers({
+   
+    currentAnnouncement: function(){
+        
+     var announcement = systemVariables.findOne({name:'currentAnnouncement'});
+     if(announcement){
+     return announcement.value;
+     }
+    else{return null};
+    }
+    
+});
+Template.setAnnouncement.events({
+    
+   'click #submitAnnouncementButton':function(e){
+       
+    e.preventDefault();
+    
+    var announcementText = $('#announcementText').val();
+    announcementObject = {name:'currentAnnouncement',value:announcementText}
+    var announcementVariable = systemVariables.findOne({name:'currentAnnouncement'})
+    if(announcementVariable){
+     
+        systemVariables.update({_id:announcementVariable._id},{$set:{value:announcementText}});
+        
+    }
+    else{
+    systemVariables.insert(announcementObject);
+    }
+   }
+    
+});
+
+Template.reviewpages.helpers({
+    
+    reviewpage: function(){
+        
+     var reviewpages = ReviewPages.find({},{sort:{standard:-1}});
+     return reviewpages;
+        
+    },
+    shouldShow: function(){
+        
+     return (this.url!='')&&(this.grade==Meteor.user().profile.grade);   
+        
+    },
+    myValue: function(){
+        
+     var myPage = ReviewPages.findOne({userId:Meteor.user()._id});
+     if(myPage){
+     return myPage.standard;
+     }
+        else{return null}
+        
+    },
+    myPage: function(){
+        
+     var myPage = ReviewPages.findOne({userId:Meteor.user()._id});
+     if(myPage){
+     return myPage.url;
+     }
+    else{return null}
+    },
+    myCode: function(){
+     var myPage = ReviewPages.findOne({userId:Meteor.user()._id});    
+     if(myPage){
+     return myPage._id;   
+     }
+        
+    }
+        
+        
+    
+    
+    
+});
+    
+Template.reviewpages.events({
+    
+   'click #submitReviewPage': function(e){
+    e.preventDefault();
+    var url = $('#reviewURL').val();
+    var standard = parseFloat($('#reviewStandardText').val());
+    var myPage = ReviewPages.findOne({userId:Meteor.user()._id})
+    ReviewPages.update({_id:myPage._id},{$set:{standard:standard,url:url}});
+       
+       
+   },
+    
+    'click .upvote': function(e) {
+        e.preventDefault();
+        page = ReviewPages.findOne({_id:this._id});
+        var weinbergApproved = (_.include(page.upvoters, "iFWh2dj9kp5JBtmve")||(Meteor.user().emails[0].address=='eweinberg@scischina.org'))
+        if(weinbergApproved){
+        var verified = prompt('Please enter the code from the webpage');
+        if(verified==this._id){
+        
+        Meteor.call('upvote', this._id); 
+        }
+        
+        }
+        else{ alert("Mr. Weinberg hasn't approved this page yet. Ask the author of the post for details.");}
+    }
+});
+Template.postItem.helpers({
+    
+    
+    hasVoted: function(){
+        
+     var user = Meteor.user();
+     page = ReviewPages.findOne({_id:this._id});
+     if(_.include(page.upvoters, user._id)){
+     return true;
+           }
+      else{  return false;}
+        
+        
+    },
+    weinbergApproved: function(){
+    page = ReviewPages.findOne({_id:this._id});
+     if(_.include(page.upvoters, "iFWh2dj9kp5JBtmve")){
+     return true;
+           }
+      else{  return false;}
+        
+        
+    },
+    isWeinberg: function(){
+        
+      return (Meteor.user().emails[0].address=='eweinberg@scischina.org');     
+        
+    }
+    
+});
+
+Template.addSurvey.helpers({
+Questions: function(){
+    var questions = [];
+    var numOfQuestions = parseInt(Session.get("addSurveyNumberOfQuestions"));
+    for(var i = 1;i<=numOfQuestions;i++){
+     questions.push({index:i,text:''});   
+    }
+    return questions;
+    
+}
+    
+});
+Template.addSurvey.events({
+    'change #addSurveyLength':function(){
+     
+        Session.set("addSurveyNumberOfQuestions",$('#addSurveyLength').val());
+        
+    },
+    'click #addSurveySubmit':function(e){
+     e.preventDefault();
+     var surveyObject = {}
+     var surveyTitle = $('#addSurveyTitle').val();
+     var surveyAlias = $('#addSurveyAlias').val();
+     var surveyAnonymous = $('#addSurveyAnonymous').prop('checked');
+     var numOfQuestions = parseInt(Session.get("addSurveyNumberOfQuestions"));
+     var questionText = $('.addSurveyQuestionText');
+     var questionTypes = $('.addSurveyQuestionType');
+     surveyObject.title = surveyTitle;
+     surveyObject.alias = surveyAlias;
+     surveyObject.length = numOfQuestions;
+     surveyObject.isAnonymous = surveyAnonymous;
+     surveyObject.questions = [];
+     for(var i = 0;i<=numOfQuestions-1;i++){
+     currentQuestion = {text:$(questionText[i]).val(),
+                        type:$(questionTypes[i]).val(),index:(i+1)};
+     surveyObject.questions.push(currentQuestion);
+         
+     }
+     console.log(surveyObject); 
+     Surveys.insert(surveyObject);
+    }
+    
+});
+
+Template.showSurvey.helpers({
+    questions:function(){
+    //console.log(this)
+    return this;
+    }
+        
+    
+        
+});
+
+
 Template.surveyShowItem.helpers({
    isText:function(){
        
@@ -486,11 +839,32 @@ Template.surveyShowItem.helpers({
    }
     
 });
-    
+
 }
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
+  if(ReviewPages.find().count()==0){
+      
+   var users = Meteor.users.find( { "profile.grade": { $in: [ '9', '10' ] } } );
+   if(users){
+   users.forEach(function(person){      
+   var page = { userId: person._id,
+               author: person.profile.realName,
+               submitted: new Date().getTime(),
+               standard: '',
+               grade: person.profile.grade,
+                url:'',
+                upvoters: [],
+                votes: 0
+                };
+       
+  ReviewPages.insert(page);
+   });     
+   }
+      
+  }
+      
   
     // code to run on server at startup
   });
@@ -511,7 +885,18 @@ Meteor.publish('users', function() {
      return Meteor.users.find({});
      }
      else{return null};
-});    
+});  
+    
+Meteor.publish('systemVariables',function(){
+    
+   if(this.userId){
+    
+    return systemVariables.find({});   
+       
+   }
+   else{return null};
+    
+});
 
 Meteor.publish('credits', function() { 
      
@@ -532,6 +917,27 @@ Meteor.publish('surveys', function() {
      else{return null};
 });
     
+Meteor.publish('reviewpages',function(){
+       
+    return ReviewPages.find({});
+});
+        
+Meteor.publish('weinbergcash',function(){
+    
+  return WeinbergCash.find({});  
+    
+});
+
+Meteor.publish('surveys', function() { 
+     
+     
+     
+     if(this.userId){
+     return Surveys.find({});
+     }
+     else{return null};
+});    
+
 Meteor.users.allow({
     
   update: function(){
@@ -547,4 +953,28 @@ Meteor.users.allow({
   }
     
 })
+
+Meteor.methods({
+ giveEMWCash: function(amount){
+  if(amount>0){   
+  var emwAccount = Meteor.users.findOne({'emails.0.address':'eweinberg@scischina.org'});
+  Meteor.users.update({_id:emwAccount._id},{$inc:{wbBalance:amount}});
+  }
+ },
+
+upvote: function(pageId) {
+var user = Meteor.user();
+// ensure the user is logged in 
+page = ReviewPages.findOne({_id:pageId});
+if(!(_.include(page.upvoters, user._id))){
+    ReviewPages.update({_id:pageId}, {
+      $addToSet: {upvoters: user._id},
+      $inc: {votes: 1}
+}); 
+}
+    
+}       
+    
+});
+
 }
