@@ -29,9 +29,10 @@
   </div>
   {{#if currentUser}}
   <div class = "text-center">
- 
+      
   </div>
   {{> studentOptionsBar}}
+    {{>announcements}}
   {{> yield}}
   {{>reassessSignUp}}
   {{>reassessEdit}}
@@ -51,11 +52,14 @@
 <div class="navbar">
   <div class="navbar-inner">
     <a class="brand" href="/">Students:</a>
+      
     <ul class="nav">
       <li id = "signUp"><a href="#reassessSignUp" data-toggle="modal">Reassessment Sign-up</a></li>
       <li id = "myReassessments"><a href="/myReassessments/">My Reassessments</a></li>
       <li id = "games"><a href = "/games/">Games</a></li>
-      
+        {{#if showReview}}
+      <li id = "review"><a href = "/review/">Review</a></li>
+        {{/if}}
         {{#if isEvan}}
         <li id = "allReassessments"><a href="/retakes/">All Reassessments</a></li>
         <li id = "allUsers"><a href="/allUsers/">All Users</a></li>
@@ -257,8 +261,8 @@
 <select name = "time">
 <option value ="0"  ></option>
 <option value="Before School" >Before School</option>
-<option value="During Lunch" >During Lunch</option>
-{{#if isGrade9}}<option value="In-Class Quiz" >In-Class Quiz</option>{{/if}}
+<option value="During Lunch" >Beginning of Lunch</option>
+<option value="In-Class Quiz" >In-Class Quiz</option>
 <option value="After School">After School</option>
 
 
@@ -445,4 +449,54 @@ You can win more by choosing to make one of the wagers below:
 </table>
 </div>
 
+</template>
+
+<template name = "announcements">
+<div class = "span11 offset1">
+    {{{currentAnnouncement}}}
+   
+</div>
+</template>
+
+<template name = "setAnnouncement">
+<div class = "span11 offset1">
+<input type = 'text' id = 'announcementText'>
+<button class = 'btn btn-primary' id = 'submitAnnouncementButton'>Set announcement</button>     
+    
+</div>
+</template>
+
+<template name = "reviewpages">
+    
+<div class = "span6 offset2">
+My Standard: <input type = 'text' id = 'reviewStandardText' placeholder = "Example: 7.2" value = {{myValue}}>  <p></p>  
+My URL: <input type = 'text' id = "reviewURL" placeholder = "Paste the address of your blog post here." value = "{{myPage}}"><p></p>
+Place this code somewhere in your blog post. Other students will need this code to vote for your page:<h4 class = "text-warning">{{myCode}}</h4>
+<button id = "submitReviewPage">Submit my URL</button>
+    <hr>
+    
+    {{#each reviewpage}}
+    {{#if shouldShow}}
+    {{>postItem}}
+    {{/if}}
+    {{/each}}
+</div>    
+</template>
+    
+<template name="postItem">
+
+  <div class="post">
+      
+     <a href="#" class="upvote btn"> {{#unless hasVoted}}⬆{{/unless}} {{#if hasVoted}}<i class = "icon-ok"></i>{{/if}}</a> 
+
+<span class="badge badge-inverse">{{votes}}</span>    
+
+<a href="{{url}}" target="_blank">Standard {{standard}}</a> -  submitted by {{author}} {{#if weinbergApproved}} <i class = "icon-ok"></i>WB{{/if}}
+      {{#if isWeinberg}} <span class = "reviewCode">{{_id}}</span>{{/if}}
+      
+     
+       
+ 
+    
+  </div>
 </template>

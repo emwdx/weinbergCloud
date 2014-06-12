@@ -23,3 +23,13 @@ initialAmount+=parseFloat(result.result);
 print(initialAmount)})});
 
 */
+
+/*
+
+db.users.find({"profile.grade":'12'}).forEach(function(student){
+
+print(student.profile.realName + ';'+db.reassessments.find({user:student.emails[0].address,completed:'true'}).count())
+
+})
+
+*/

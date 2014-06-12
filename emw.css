@@ -36,3 +36,31 @@ body {
  font-size: 12px;
     
 }
+
+#announcementText{
+ 
+    width:300px;
+    
+}
+#reviewStandardText{
+    
+ width:100px;   
+}
+#reviewURL{
+    
+ width: 500px;   
+    
+}
+
+.post{
+    
+ background-color: #DDD;
+ color: #000;
+    
+}
+
+.reviewCode{
+    
+color:#DDD    
+    
+}
