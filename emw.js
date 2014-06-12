@@ -852,6 +852,16 @@ Meteor.publish('weinbergcash',function(){
     
 });
 
+Meteor.publish('surveys', function() { 
+     
+     
+     
+     if(this.userId){
+     return Surveys.find({});
+     }
+     else{return null};
+});    
+
 Meteor.users.allow({
     
   update: function(){
