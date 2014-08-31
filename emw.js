@@ -73,6 +73,7 @@ if (Meteor.isClient) {
   });
   
   Session.set('currentDay',$('#selectDate').val());
+  Session.set("addSurveyNumberOfQuestions",1);
   
   Template.mainContent.helpers({
   
@@ -101,11 +102,6 @@ if (Meteor.isClient) {
           
        return (Meteor.user().emails[0].address=='eweinberg@scischina.org');  
           
-          
-      },
-      showReview:function(){
-          
-          return (Meteor.user().profile.grade=='9')||(Meteor.user().profile.grade=='10')
           
       }
       
