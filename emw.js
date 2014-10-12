@@ -154,6 +154,7 @@ if (Meteor.isClient) {
                
 
  }
+ console.log(newRetake);
  currentUser = Meteor.user();
  currentCredit = Credits.findOne({user:currentUser.emails[0].address, used:0});
  
@@ -332,7 +333,8 @@ currentUser = Meteor.users.findOne({_id:this._id});
 newCreditObject = {
 user: currentUser.emails[0].address,
 credits:1,
-used: 0
+used: 0,
+createdOn: new Date()
 }
 
 
@@ -704,70 +706,7 @@ Template.postItem.helpers({
     
 });
 
-Template.addSurvey.helpers({
-Questions: function(){
-    var questions = [];
-    var numOfQuestions = parseInt(Session.get("addSurveyNumberOfQuestions"));
-    for(var i = 1;i<=numOfQuestions;i++){
-     questions.push({index:i,text:''});   
-    }
-    return questions;
-    
-}
-    
-});
-Template.addSurvey.events({
-    'change #addSurveyLength':function(){
-     
-        Session.set("addSurveyNumberOfQuestions",$('#addSurveyLength').val());
-        
-    },
-    'click #addSurveySubmit':function(e){
-     e.preventDefault();
-     var surveyObject = {}
-     var surveyTitle = $('#addSurveyTitle').val();
-     var surveyAlias = $('#addSurveyAlias').val();
-     var surveyAnonymous = $('#addSurveyAnonymous').prop('checked');
-     var numOfQuestions = parseInt(Session.get("addSurveyNumberOfQuestions"));
-     var questionText = $('.addSurveyQuestionText');
-     var questionTypes = $('.addSurveyQuestionType');
-     surveyObject.title = surveyTitle;
-     surveyObject.alias = surveyAlias;
-     surveyObject.length = numOfQuestions;
-     surveyObject.isAnonymous = surveyAnonymous;
-     surveyObject.questions = [];
-     for(var i = 0;i<=numOfQuestions-1;i++){
-     currentQuestion = {text:$(questionText[i]).val(),
-                        type:$(questionTypes[i]).val(),index:(i+1)};
-     surveyObject.questions.push(currentQuestion);
-         
-     }
-     console.log(surveyObject); 
-     Surveys.insert(surveyObject);
-    }
-    
-});
-
-Template.showSurvey.helpers({
-    questions:function(){
-    //console.log(this)
-    return this;
-    }
-        
-    
-        
-});
-
-Template.surveyShowItem.helpers({
-   isText:function(){
-       
-    return (this.type=='1')   
-       
-   }
-    
-});
-    
-    
+  
     
 }
 
