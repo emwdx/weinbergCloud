@@ -88,7 +88,7 @@
 <select name = "course">
 <option value ="0"  ></option>
 <option value="PHYS" >Physics 12</option>
-<option value="CALC" >IB Math</option>
+<option value="IB MATH" >IB Math</option>
 <option value="IB PHYS">IB Physics</option>
 <option value="M9">Math 9</option>
 <option value="M10">Math 10</option>
@@ -125,11 +125,14 @@
 <option value="4" >4</option>
 <option value="5">5</option>
 <option value="6">6</option>
+<option value="7">7</option>
+<option value="8" >8</option>
+<option value="9">9</option>
+<option value="10">10</option>
 
 </select>
  </div>
-  </div>    
-    
+  </div>  
 
   
   <div class="control-group">
@@ -187,7 +190,9 @@
     {{#if hasEnoughCredits}}
     <button class="btn btn-primary" id = "signUpRetakes">Sign-Up</button>
     {{/if}}
-    
+    {{#if isSubmittingReassessment}}
+    <h4>Submitting reassessment...Please wait.</h4>
+    {{/if}}
   </div>
 </div>
       
@@ -209,8 +214,9 @@
 <div class = "controls">
 <select name = "course">
 <option value ="0"  ></option>
-<option value="PHYS" >Physics</option>
-<option value="CALC" >Calculus</option>
+<option value="PHYS" >Physics 12</option>
+<option value="IB MATH" >IB Math</option>
+<option value="IB PHYS">IB Physics</option>
 <option value="M9">Math 9</option>
 <option value="M10">Math 10</option>
 
@@ -224,17 +230,17 @@
 <div class = "controls">
 <select name = "unit">
 <option value ="0"  selected ="selected"></option>
-<option value="5" >Unit 5</option>
-<option value="6">Unit 6</option>
-<option value="7">Unit 7</option>
-<option value="8" >Unit 8</option>
-<option value="9">Unit 9</option>
-<option value="10">Unit 10</option>
+<option value="1" >Unit 1</option>
+<option value="2">Unit 2</option>
+<option value="3">Unit 3</option>
+<option value="4" >Unit 4</option>
+<option value="5">Unit 5</option>
 
 
 </select>
  </div>
   </div>
+
 
 <div class="control-group">
 <label class = "control-label">Standard:</label> 
@@ -247,6 +253,10 @@
 <option value="4" >4</option>
 <option value="5">5</option>
 <option value="6">6</option>
+<option value="7">7</option>
+<option value="8" >8</option>
+<option value="9">9</option>
+<option value="10">10</option>
 
 </select>
  </div>

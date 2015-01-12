@@ -12,4 +12,5 @@ force-ssl
 insecure
 underscore
 iron:router
+mrt:mathjax
 

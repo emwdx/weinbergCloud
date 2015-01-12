@@ -130,7 +130,8 @@ if (Meteor.isClient) {
      
      return (is9|isEvan);
         
-    }
+    },
+    isSubmittingReassessment: function(){return Session.equals('isSubmittingReassessment',true)}
    
       
   });
@@ -156,12 +157,24 @@ if (Meteor.isClient) {
  }
  console.log(newRetake);
  currentUser = Meteor.user();
- currentCredit = Credits.findOne({user:currentUser.emails[0].address, used:0});
  
- Credits.update({_id:currentCredit._id},{$set:{used:1}});   
- Reassessments.insert(newRetake);
+ Reassessments.insert(newRetake, function(error,result){
+ Session.set('isSubmittingReassessment',true);    
+  if(result){$('#reassessSignUp').modal('hide');
+           
+                currentCredit=Credits.findOne({user:currentUser.emails[0].address, used:0});
  
- $('#reassessSignUp').modal('hide');
+            Credits.update({_id:currentCredit._id},{$set:{used:1}});  
+             Session.set('isSubmittingReassessment',false);
+            }   
+   else{
+       alert('Your reassessment did not go through. Please try again later.');
+       Session.set('isSubmittingReassessment',false); 
+   
+   } 
+ });
+ 
+ 
      
  }
       
@@ -832,7 +845,13 @@ if(!(_.include(page.upvoters, user._id))){
 }); 
 }
     
-}       
+},
+    
+reassessmentSignUp: function(reassessment){
+var user = Meteor.user();    
+    
+    
+}
     
 });
 
