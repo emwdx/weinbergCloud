@@ -33,3 +33,26 @@ print(student.profile.realName + ';'+db.reassessments.find({user:student.emails[
 })
 
 */
+
+/*
+
+Standards.find().forEach(function(standard){
+
+var currentCourse = standard.course;
+var newName = currentCourse.replace(" ","");
+Standards.update({_id:standard._id},{$set:{course:newName}});
+
+});
+
+for(var i = 5;i<=8;i++){
+for(var j = 1;j<=5;j++){
+title = "Title " + i + "."+ j;
+description = "Description " + i + "-"+ j;
+user = Meteor.user();
+unit = i.toString();
+standard = j.toString();
+Standards.insert({course:"IBMATH",unit:unit,standard:standard,title:title,description:description})
+}
+}
+
+*/

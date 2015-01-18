@@ -1,5 +1,6 @@
 <head>
   <title>WeinbergCloud</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 
@@ -8,14 +9,20 @@
 <div class = "container">
 
 <div class = "row-fluid">
-<div class = "span4 offset4">
-<img src = "/emwCloud.png">
+<div class = "span4">
+<h1>WeinbergCloud</h1>
+<div id = "connectionStatus" style = "{{connectionClass}};text-align:center">{{connectionStatus}}</div>
 </div>
-</div>
-<p class = "text-center text-info">Students have taken {{numOfReassessments}} reassessments so far this semester.</p>
+<div class = "span8">
+    
+<div class = "text-center text-info" id = "reassessmentsTotal">Students have taken {{numOfReassessments}} reassessments so far this semester.</div>
     {{#if currentUser}}
-    <p class = "text-center text-warning">You took {{myNumOfReassessments}} of them!</p>
+    <div class = "text-center text-warning" id = "yourReassessmentsTotal">You took {{myNumOfReassessments}} of them!</div>
     {{/if}}
+
+</div>
+</div>
+
 <div class = "row-fluid">
   <h2 class = "text-center">
    {{> loggingIn}}
@@ -54,15 +61,33 @@
     <a class="brand" href="/">Students:</a>
       
     <ul class="nav">
-      <li id = "signUp"><a href="#reassessSignUp" data-toggle="modal">Reassessment Sign-up</a></li>
+      <li class = "dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b>&nbsp;Reassessments</a>
+      <ul class = "dropdown-menu">
+       <li id = "signUp"><a href="#reassessSignUp" data-toggle="modal">Reassessment Sign-up</a></li>
       <li id = "myReassessments"><a href="/myReassessments/">My Reassessments</a></li>
-      <!--li id = "games"><a href = "/games/">Games</a></li-->
+      
         
-        {{#if isEvan}}
+        {{#if isAdmin}}
         <li id = "allReassessments"><a href="/retakes/">All Reassessments</a></li>
         <li id = "allUsers"><a href="/allUsers/">All Users</a></li>
+        <!--li id = "games"><a href = "/games/">Games</a></li-->  
+
         {{/if}}
-    </ul>
+        </ul>   
+    </li> 
+        
+    <li class = "dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b>&nbsp;Standards</a>    
+     <ul class = "dropdown-menu">
+         {{#if isAdmin}}
+     <li id = "addStandards"><a href="/standards/add/">Add</a></li> 
+         {{/if}}
+     <li id = "viewStandards"><a href="/standards/view/">View </a></li>
+     </ul>   
+    </li>
+    </ul> 
+      
     <ul class = "nav pull-right"> {{> loginButtons}}</ul>
     <ul class = "nav pull-right" id = "reassessmentCreditsBar">Reassessment Credits:{{>myCreditsBadge}}</ul>
   </div>
@@ -71,394 +96,14 @@
 </template>
 
 
-<template name = "reassessSignUp">
-    
-<div id="reassessSignUp" class="modal hide fade darkText" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">Sign-up for Reassessment:</h3>  
-  </div>
-  <div class="modal-body">
-  
-      {{#if hasEnoughCredits}}
-<form class="form-horizontal">
-<div class="control-group">
-<label class = "control-label">Course:</label> 
-<div class = "controls">
-<select name = "course">
-<option value ="0"  ></option>
-<option value="PHYS" >Physics 12</option>
-<option value="IB MATH" >IB Math</option>
-<option value="IB PHYS">IB Physics</option>
-<option value="M9">Math 9</option>
-<option value="M10">Math 10</option>
-
-</select>
- </div>    
- </div> 
-
-    
-<div class="control-group">
-<label class = "control-label">Unit:</label> 
-<div class = "controls">
-<select name = "unit">
-<option value ="0"  selected ="selected"></option>
-<option value="1" >Unit 1</option>
-<option value="2">Unit 2</option>
-<option value="3">Unit 3</option>
-<option value="4" >Unit 4</option>
-<option value="5">Unit 5</option>
-
-
-</select>
- </div>
-  </div>
-
-<div class="control-group">
-<label class = "control-label">Standard:</label> 
-<div class = "controls">
-<select name = "standard">
-<option value ="0"  selected ="selected"></option>
-<option value="1" >1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4" >4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8" >8</option>
-<option value="9">9</option>
-<option value="10">10</option>
-
-</select>
- </div>
-  </div>  
-
-  
-  <div class="control-group">
-    <label class = "control-label">Time:</label> 
-<div class = "controls">
-<select name = "time">
-<option value ="0"  ></option>
-<option value="Before School" >Before School</option>
-<option value="Beginning of Lunch" >Beginning of Lunch</option>
-{{#if isGrade9}}<option value="In-Class Quiz" >In-Class Quiz</option>{{/if}}
-<option value="After School">After School</option>
-
-
-</select>
- </div>    
- </div>      
-
-  <div class="control-group">
-    <label class = "control-label">Day</label> 
-<div class = "controls">
-<select name = "date">
-{{#if isWeekend}}
-<option value ="{{daysObject.a}}">{{daysObject.a}}</option>
-{{/if}}
-<option value ="{{daysObject.b}}">{{daysObject.b}}</option>
-<option value="{{daysObject.c}}" >{{daysObject.c}}</option>
-<option value="{{daysObject.d}}" > {{daysObject.d}}</option>
-<option value="{{daysObject.e}}"> {{daysObject.e}}</option>
-<option value="{{daysObject.f}}">{{daysObject.f}}</option>
-
-</select>
-
- </div>    
- </div>    
-
-</form>  
-{{/if}}
-
-{{#unless hasEnoughCredits}}
-<div id = "notEnoughCredits">
-    <span class = "text-error">You do not have enough credits for this reassessment. How do you earn more?</span>
-    <ul>
-    <li>Show Mr. Weinberg practice questions you have completed for this standard since your last assessment. </li>
-    <li>See Mr. Weinberg for tutoring.</li>
-    <li>Show Mr. Weinberg independent work you have done during class related to this standard since your last assessment.</li>
-    </ul>
-</div>
-{{/unless}}       
-</div>
-    
-<div class="modal-footer">
-    <h5 class = "text-left">Reassessment Credits: {{>myCreditsBadge}}</h5>
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    
-    {{#if hasEnoughCredits}}
-    <button class="btn btn-primary" id = "signUpRetakes">Sign-Up</button>
-    {{/if}}
-    {{#if isSubmittingReassessment}}
-    <h4>Submitting reassessment...Please wait.</h4>
-    {{/if}}
-  </div>
-</div>
-      
-</template>
-
-<template name = "reassessEdit">
-    
-<div id="reassessEdit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">Edit Reassessment: </h3>
-  </div>
-  <div class="modal-body">
-  
-      
-<form class="form-horizontal">
-<div class="control-group">
-<label class = "control-label">Course:</label> 
-<div class = "controls">
-<select name = "course">
-<option value ="0"  ></option>
-<option value="PHYS" >Physics 12</option>
-<option value="IB MATH" >IB Math</option>
-<option value="IB PHYS">IB Physics</option>
-<option value="M9">Math 9</option>
-<option value="M10">Math 10</option>
-
-</select>
- </div>    
- </div> 
-
-    
-<div class="control-group">
-<label class = "control-label">Unit:</label> 
-<div class = "controls">
-<select name = "unit">
-<option value ="0"  selected ="selected"></option>
-<option value="1" >Unit 1</option>
-<option value="2">Unit 2</option>
-<option value="3">Unit 3</option>
-<option value="4" >Unit 4</option>
-<option value="5">Unit 5</option>
-
-
-</select>
- </div>
-  </div>
-
-
-<div class="control-group">
-<label class = "control-label">Standard:</label> 
-<div class = "controls">
-<select name = "standard">
-<option value ="0"  selected ="selected"></option>
-<option value="1" >1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4" >4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8" >8</option>
-<option value="9">9</option>
-<option value="10">10</option>
-
-</select>
- </div>
-  </div>    
-    
-
-  
-  <div class="control-group">
-    <label class = "control-label">Time:</label> 
-<div class = "controls">
-<select name = "time">
-<option value ="0"  ></option>
-<option value="Before School" >Before School</option>
-<option value="During Lunch" >Beginning of Lunch</option>
-<option value="In-Class Quiz" >In-Class Quiz</option>
-<option value="After School">After School</option>
-
-
-</select>
- </div>    
- </div>      
-
-  <div class="control-group">
-    <label class = "control-label">Day</label> 
-<div class = "controls">
-<select name = "date">
-<option value ="{{currentDate}}">{{currentDate}}</option>
-{{#if isWeekend}}
-<option value ="{{daysObject.a}}">{{daysObject.a}}</option>
-{{/if}}
-<option value ="{{daysObject.b}}">{{daysObject.b}}</option>
-<option value="{{daysObject.c}}" >{{daysObject.c}}</option>
-<option value="{{daysObject.d}}" > {{daysObject.d}}</option>
-<option value="{{daysObject.e}}"> {{daysObject.e}}</option>
-<option value="{{daysObject.f}}">{{daysObject.f}}</option>
-
-</select>
-
- </div>    
- </div>    
-
-</form>  
-       
-</div>
-    
-<div class="modal-footer">
-    
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary" id = "updateReassessment">Update</button>
-  </div>
-</div>
-      
-</template>
-
-<template name = "myReassessments">
-<div class = "span4 offset4">
-My upcoming reassessments:
-<table class = "table table-condensed">
-{{#each reassessments}}
-    
-<tr><td><button class = "btn cancelReassessment btn-danger">Cancel this reassessment</button></td><td ><h5>{{day}}</h5></td><td><h5>{{time}}</h5></td><td><h5>{{course}} Standard {{unit}}.{{standard}}</h5></td><td><button class = "btn editReassessment btn-info">Edit this reassessment</button></td></tr>    
-{{/each}}
-</table>
-</div>
-</template>
-
-<template name = "defaultPage">
-<h3>Please select an option above.</h3>
-
-
-</template>
-
-<template name = "showNextRetakes">
-<div class = "row"><select name = "date" id = "selectDate">
-<option value ="{{daysObject.a}}"  >{{daysObject.a}}</option>
-<option value="{{daysObject.b}}" >{{daysObject.b}}</option>
-<option value="{{daysObject.c}}" > {{daysObject.c}}</option>
-<option value="{{daysObject.d}}"> {{daysObject.d}}</option>
-<option value="{{daysObject.e}}">{{daysObject.e}}</option>
-<option value="{{daysObject.f}}">{{daysObject.f}}</option>
-
-</select></div>
-
-<div class = "span4 offset4">
-    <table class = "table table-condensed">
-
-{{#each reassessments}}
-    
-<tr><td><button class = "btn cancelReassessment btn-danger">Cancel this reassessment</button></td><td>{{user}}</td><td ><h5>{{day}}</h5></td><td><h5>{{time}}</h5></td><td><h5>{{course}} Standard {{unit}}.{{standard}}</h5></td><td><button class = "btn completeReassessment">Completed</button></td></tr>    
-{{/each}}
-</table>
-</div>
-
-</template>
 
 <template name = "loggingIn">
     {{#if isLoggingIn}}
 <p class = "text-center text-info">Logging in to WeinbergCloud...</p>
+    {{>spinner}}
     {{/if}}
 </template>
 
-<template name = "allUsers">
-<div class = "span6 offset3">
-<table class = "table ">
-
-{{#each userProfiles}}
-<tr><td>Credits:{{>creditBadge}}</td><td>{{emails.[0].address}}</td>{{#if isEvan}}<td>{{profile.realName}}</td><td>{{profile.grade}}</td><td><button class = "editProfile btn btn-small">Edit Profile</button></td>{{/if}}<td><button class = "addCredit btn-small btn">Add Credit</button></td><td><button class = "removeCredit btn-small btn">Remove Credit</button></td></tr>
-{{/each}}
-</table>
-</div>
-
-</template>
-<template name = "creditBadge">
-<span class="badge badge-inverse">{{numberOfCredits}}</span>    
-
-</template>
-<template name = "myCreditsBadge">
-<span class="badge badge-inverse">{{numberOfCredits}}</span>    
-
-</template>
-
-<template name = "editUserProfile">
-<div id="profileEdit" class="modal hide fade darkText" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="profileLabel">User Profile: {{selectedUser}} <button class = "btn" id = "profileDelete">Delete</button></h3>
-  </div>
-  <div class="modal-body">
-  
-      
-<form class="form-horizontal">
-<div class="control-group">
-<label class = "control-label">Student Name:</label> 
-<div class = "controls">
-<input type = "text" id = "profileUserName" value = "{{userName}}">
- </div>    
- </div> 
-
-    
-<div class="control-group">
-<label class = "control-label">Grade:</label> 
-<div class = "controls">
-<select name = "profileUserGrade" id = "profileGrade">
-<option value ="0"  selected ="selected"></option>
-<option value="9" >Grade 9</option>
-<option value="10">Grade 10</option>
-<option value="11">Grade 11</option>
-<option value="12">Grade 12</option>
-
-</select>
- </div>
-  </div>
-
-
-</form>  
-       
-</div>
-    
-<div class="modal-footer">
-    
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary" id = "updateProfile">Update Profile</button>
-  </div>
-</div>
-
-
-</template>
-<template name = "gamesOfChance">
-
-<h1>You currently have ${{numOfWB}} of WeinbergCash.</h1>
-<span class = "text-info">Note: The current real world value of $1.00 in WeinbergCash is 0 RMB.</span>
-<hr>
-You can win more by choosing to make one of the wagers below:
- <p>
-<h3>Your bet:</h3>    
-<input type = "number" id = "myBet" placeholder = "How much do you want to bet?" min = "0.00" max = "{{numOfWB}}" step="0.001">    
-    
-    </p>
-    <p>
-<button class = "btn btn-primary" id = "bet2x">50% probability of winning 2x your bet<br>Mr. Weinberg taxes your winnings 5%</button>
-<button class = "btn btn-primary" id = "bet3x">30% probability of winning 3x your bet<br>Mr. Weinberg taxes your winnings 2%</button>
-<button class = "btn btn-primary" id = "bet4x">25% probability of winning 4x your bet<br> No Weinberg tax!</button>
-    </p>
-   
-    
-
-
-
-</template>
-
-<template name = "allWBCTotals">
-<div class = "span6 offset3">
-<p class = "text-center">WeinbergCash Totals:</p>
-<table class = "table ">
-
-{{#each WBProfiles}}
-<tr><td><h3>{{profile.realName}}</h3></td><td><h3>${{numOfWB}}</h3></td></tr>
-{{/each}}
-</table>
-</div>
-
-</template>
 
 <template name = "announcements">
 <div class = "span11 offset1">
@@ -468,44 +113,13 @@ You can win more by choosing to make one of the wagers below:
 </template>
 
 <template name = "setAnnouncement">
+    {{#if isAdmin}}
 <div class = "span11 offset1">
 <input type = 'text' id = 'announcementText'>
 <button class = 'btn btn-primary' id = 'submitAnnouncementButton'>Set announcement</button>     
     
 </div>
-</template>
-
-<template name = "reviewpages">
-    
-<div class = "span6 offset2">
-My Standard: <input type = 'text' id = 'reviewStandardText' placeholder = "Example: 7.2" value = {{myValue}}>  <p></p>  
-My URL: <input type = 'text' id = "reviewURL" placeholder = "Paste the address of your blog post here." value = "{{myPage}}"><p></p>
-Place this code somewhere in your blog post. Other students will need this code to vote for your page:<h4 class = "text-warning">{{myCode}}</h4>
-<button id = "submitReviewPage">Submit my URL</button>
-    <hr>
-    
-    {{#each reviewpage}}
-    {{#if shouldShow}}
-    {{>postItem}}
     {{/if}}
-    {{/each}}
-</div>    
 </template>
-    
-<template name="postItem">
 
-  <div class="post">
-      
-     <a href="#" class="upvote btn"> {{#unless hasVoted}}⬆{{/unless}} {{#if hasVoted}}<i class = "icon-ok"></i>{{/if}}</a> 
 
-<span class="badge badge-inverse">{{votes}}</span>    
-
-<a href="{{url}}" target="_blank">Standard {{standard}}</a> -  submitted by {{author}} {{#if weinbergApproved}} <i class = "icon-ok"></i>WB{{/if}}
-      {{#if isWeinberg}} <span class = "reviewCode">{{_id}}</span>{{/if}}
-      
-     
-       
- 
-    
-  </div>
-</template>

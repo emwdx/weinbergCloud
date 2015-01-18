@@ -1,0 +1,327 @@
+
+<template name = "reassessSignUp">
+    
+<div id="reassessSignUp" class="modal hide fade darkText" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Sign-up for Reassessment:</h3>  
+  </div>
+  <div class="modal-body">
+  
+      {{#if hasEnoughCredits}}
+<form class="form-horizontal">
+<div class="control-group">
+<label class = "control-label">Course:</label> 
+<div class = "controls">
+<select name = "course" class = "reassessSelect">
+<option value ="0"  ></option>
+<option value="PHYS12" >Physics 12</option>
+<option value="IBMATH" >IB Math</option>
+<option value="IBPHYS">IB Physics</option>
+<option value="MATH10">Math 10</option>
+
+</select>
+ </div>    
+ </div> 
+
+    
+<div class="control-group">
+<label class = "control-label">Unit:</label> 
+<div class = "controls">
+<select name = "unit" class = "reassessSelect">
+<option value ="0"  selected ="selected"></option>
+<option value="5" >Unit 5</option>
+<option value="6">Unit 6</option>
+<option value="7">Unit 7</option>
+<option value="8" >Unit 8</option>
+<option value="9">Unit 9</option>
+
+
+</select>
+ </div>
+  </div>
+
+<div class="control-group">
+<label class = "control-label">Standard:</label> 
+<div class = "controls">
+<select name = "standard" class = "reassessSelect">
+<option value ="0"  selected ="selected"></option>
+<option value="1" >1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4" >4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8" >8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+
+</select>
+ </div>
+     
+    {{#if standardFound}}
+    {{#with standardFound}}
+    <p></p>
+    <p class = "text-center text-info">
+    <a href = "/standards/view/{{course}}/{{unit}}/{{standard}}/">
+    {{course}} Standard {{unit}}.{{standard}}: {{title}}
+    </a>
+    </p>
+    {{/with}}
+    {{/if}}
+  </div>  
+
+<div class="control-group">
+<label class = "control-label"> <span class="new">NEW!</span>Current Grade:</label>
+
+<div class = "controls">
+<select name = "grade" class = "reassessSelect">
+<option value ="0"  selected ="selected"></option>
+<option value="6" >6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9" >9</option>
+</select>
+ </div>
+  </div>
+    
+  
+  <div class="control-group">
+    <label class = "control-label">Time:</label> 
+<div class = "controls">
+<select name = "time" class = "reassessSelect">
+<option value ="0" selected ="selected" ></option>
+<option value="Before School" >Before School</option>
+<option value="Beginning of Lunch" >Beginning of Lunch</option>
+<option value="In-Class Quiz" >In-Class Quiz</option>
+<option value="After School">After School</option>
+
+
+</select>
+ </div>    
+ </div>      
+
+  <div class="control-group">
+    <label class = "control-label">Day</label> 
+<div class = "controls">
+<select name = "date">
+{{#if isWeekend}}
+<option value ="{{daysObject.a}}">{{daysObject.a}}</option>
+{{/if}}
+<option value ="{{daysObject.b}}">{{daysObject.b}}</option>
+<option value="{{daysObject.c}}" >{{daysObject.c}}</option>
+<option value="{{daysObject.d}}" > {{daysObject.d}}</option>
+<option value="{{daysObject.e}}"> {{daysObject.e}}</option>
+<option value="{{daysObject.f}}">{{daysObject.f}}</option>
+
+</select>
+
+ </div>    
+ </div>    
+
+</form>  
+{{/if}}
+
+{{#unless hasEnoughCredits}}
+<div id = "notEnoughCredits">
+    <span class = "text-error">You do not have enough credits for this reassessment. How do you earn more?</span>
+    <ul>
+    <li>Show Mr. Weinberg practice questions you have completed for this standard since your last assessment. </li>
+    <li>See Mr. Weinberg for tutoring.</li>
+    <li>Show Mr. Weinberg independent work you have done during class related to this standard since your last assessment.</li>
+    </ul>
+</div>
+{{/unless}}       
+</div>
+    
+<div class="modal-footer">
+    <h5 class = "text-left">Reassessment Credits: {{>myCreditsBadge}}</h5>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    
+    {{#if hasEnoughCredits}}
+    <button class="btn btn-primary" id = "signUpRetakes">Sign-Up</button>
+    {{/if}}
+    {{#if isSubmittingReassessment}}
+    <h4>Submitting reassessment...Please wait.</h4>
+    {{>spinner}}
+    {{/if}}
+  </div>
+</div>
+      
+</template>
+
+<template name = "reassessEdit">
+    
+<div id="reassessEdit" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Edit Reassessment: </h3>
+  </div>
+  <div class="modal-body">
+  
+      
+<form class="form-horizontal">
+<div class="control-group">
+<label class = "control-label">Course:</label> 
+<div class = "controls">
+<select name = "course" class = "reassessEditSelect">
+<option value ="0"  ></option>
+<option value="PHYS12" >Physics 12</option>
+<option value="IBMATH" >IB Math</option>
+<option value="IBPHYS">IB Physics</option>
+<option value="MATH10">Math 10</option>
+
+</select>
+ </div>    
+ </div> 
+
+    
+<div class="control-group">
+<label class = "control-label">Unit:</label> 
+<div class = "controls">
+<select name = "unit" class = "reassessEditSelect">
+<option value ="0"  selected ="selected" required></option>
+<option value="5" >Unit 5</option>
+<option value="6">Unit 6</option>
+<option value="7">Unit 7</option>
+<option value="8" >Unit 8</option>
+<option value="9">Unit 9</option>
+
+
+</select>
+ </div>
+  </div>
+
+
+<div class="control-group">
+<label class = "control-label">Standard:</label> 
+<div class = "controls">
+<select name = "standard" class = "reassessEditSelect">
+<option value ="0"  selected ="selected"></option>
+<option value="1" >1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4" >4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8" >8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+
+</select>
+ </div>
+    
+    {{#if standardFound}}
+    <a href = "/standards/view/{{course}}/{{unit}}/{{standard}}/">
+ 
+    {{course}} Standard {{unit}}.{{standard}}: {{title}}
+    </a>
+    {{/if}}
+  </div>    
+    
+<div class="control-group">
+<label class = "control-label"> <span class="new">NEW!</span>Current Grade:</label>
+
+<div class = "controls">
+<select name = "grade" class = "reassessEditSelect">
+<option value ="0"  selected ="selected"></option>
+<option value="6" >6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9" >9</option>
+</select>
+ </div>
+  </div>
+  
+  <div class="control-group">
+    <label class = "control-label">Time:</label> 
+<div class = "controls">
+<select name = "time" class = "reassessEditSelect">
+<option value ="0"  ></option>
+<option value="Before School" >Before School</option>
+<option value="During Lunch" >Beginning of Lunch</option>
+<option value="In-Class Quiz" >In-Class Quiz</option>
+<option value="After School">After School</option>
+
+
+</select>
+ </div>    
+ </div>      
+
+  <div class="control-group">
+    <label class = "control-label">Day</label> 
+<div class = "controls">
+<select name = "date" class = "reassessEditSelect">
+<option value ="{{currentDate}}">{{currentDate}}</option>
+{{#if isWeekend}}
+<option value ="{{daysObject.a}}">{{daysObject.a}}</option>
+{{/if}}
+<option value ="{{daysObject.b}}">{{daysObject.b}}</option>
+<option value="{{daysObject.c}}" >{{daysObject.c}}</option>
+<option value="{{daysObject.d}}" > {{daysObject.d}}</option>
+<option value="{{daysObject.e}}"> {{daysObject.e}}</option>
+<option value="{{daysObject.f}}">{{daysObject.f}}</option>
+
+</select>
+
+ </div>    
+ </div>    
+
+</form>  
+       
+</div>
+    
+<div class="modal-footer">
+    
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id = "updateReassessment">Update</button>
+  </div>
+</div>
+      
+</template>
+
+<template name = "myReassessments">
+<div class = "span6 offset3">
+My upcoming reassessments:
+<table class = "table table-condensed">
+{{#each reassessments}}
+    
+<tr><td><button class = "btn cancelReassessment btn-danger">Cancel this reassessment</button></td><td ><h5>{{day}}</h5></td><td><h5>{{time}}</h5></td><td><h5>{{course}} Standard {{unit}}.{{standard}}</h5></td><td>Grade: {{grade}}</td><td><button class = "btn editReassessment btn-info">Edit this reassessment</button></td></tr>    
+{{/each}}
+</table>
+</div>
+</template>
+
+<template name = "defaultPage">
+<h3>Please select an option above.</h3>
+
+
+</template>
+
+<template name = "showNextRetakes">
+<div class = "row">
+<div class = "span4">
+<select name = "date" id = "selectDate">
+<option value ="{{daysObject.a}}"  selected = "selected">{{daysObject.a}}</option>
+<option value="{{daysObject.b}}" >{{daysObject.b}}</option>
+<option value="{{daysObject.c}}" > {{daysObject.c}}</option>
+<option value="{{daysObject.d}}"> {{daysObject.d}}</option>
+<option value="{{daysObject.e}}">{{daysObject.e}}</option>
+<option value="{{daysObject.f}}">{{daysObject.f}}</option>
+
+</select></div>
+</div>
+<div class = "row">
+<div class = "span4 offset4">
+    <table class = "table table-condensed">
+
+{{#each reassessments}}
+    
+<tr><td><button class = "btn cancelReassessment btn-danger">Cancel this reassessment</button></td><td>{{user}}</td><td ><h5>{{day}}</h5></td><td><h5>{{time}}</h5></td><td><h5>{{course}} Standard {{unit}}.{{standard}}</h5></td><td><button class = "btn completeReassessment">Completed</button></td></tr>    
+{{/each}}
+</table>
+</div>
+</div>
+</template>
