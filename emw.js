@@ -67,7 +67,19 @@ if (Meteor.isClient) {
        return (Meteor.user().emails[0].address=='eweinberg@scischina.org');  
           
           
-      }
+      },
+      connectionStatus:function(){
+  return Meteor.status().status;   
+  },
+  connectionClass:function(){
+  if(Meteor.status().status =='connected'){
+      return "color:limegreen"}
+  else if(Meteor.status().status=='connecting'){
+       return "color:gray";}
+  else{
+        return "color:red";   
+  }
+  }
       
       
   });

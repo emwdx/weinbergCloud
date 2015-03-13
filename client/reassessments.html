@@ -214,10 +214,13 @@
  </div>
     
     {{#if standardFound}}
-    <a href = "/standards/view/{{course}}/{{unit}}/{{standard}}/">
+    {{#with standardFound}}
+    <p></p>
+    <a href = "/standards/view/{{course}}/{{unit}}/{{standard}}/" target = "_blank">
  
     {{course}} Standard {{unit}}.{{standard}}: {{title}}
     </a>
+    {{/with}}
     {{/if}}
   </div>    
     
@@ -283,7 +286,7 @@
 </template>
 
 <template name = "myReassessments">
-<div class = "span6 offset3">
+<div class = "span8 offset2">
 My upcoming reassessments:
 <table class = "table table-condensed">
 {{#each reassessments}}
@@ -314,12 +317,12 @@ My upcoming reassessments:
 </select></div>
 </div>
 <div class = "row">
-<div class = "span4 offset4">
+<div class = "span8 offset2">
     <table class = "table table-condensed">
 
 {{#each reassessments}}
     
-<tr><td><button class = "btn cancelReassessment btn-danger">Cancel this reassessment</button></td><td>{{user}}</td><td ><h5>{{day}}</h5></td><td><h5>{{time}}</h5></td><td><h5>{{course}} Standard {{unit}}.{{standard}}</h5></td><td><button class = "btn completeReassessment">Completed</button></td></tr>    
+<tr><td><button class = "btn cancelReassessment btn-danger">Cancel this reassessment</button></td><td>{{user}}</td><td ><h5>{{day}}</h5></td><td><h5>{{time}}</h5></td><td><h5>{{course}} Standard {{unit}}.{{standard}}</h5></td><td>Grade: {{grade}}</td><td><button class = "btn completeReassessment">Completed</button></td></tr>    
 {{/each}}
 </table>
 </div>

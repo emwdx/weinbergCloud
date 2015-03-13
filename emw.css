@@ -1,17 +1,17 @@
 /* CSS declarations go here */
 html{
 background:rgb(22, 56, 119); 
-    
+  
     
     
 }
 
-
 body {
+    margin:20px;
     font-family: Futura;
     background:transparent;
     color: #CCCCCC;
-    width:100%;
+    width:90%;
 }
 
 #notEnoughCredits{
@@ -124,4 +124,10 @@ display:inline;
 height:10px;
 border-radius: 10px;
 float:left;
+margin-top:10px;
+}
+
+#loginDiv{
+margin-top:10px;    
+    
 }

@@ -1,6 +1,6 @@
 <head>
   <title>WeinbergCloud</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, user-scalable=no">
 </head>
 
 
@@ -8,20 +8,8 @@
 <template name = "mainContent">
 <div class = "container">
 
-<div class = "row-fluid">
-<div class = "span4">
-<h1>WeinbergCloud</h1>
-<div id = "connectionStatus" style = "{{connectionClass}};text-align:center">{{connectionStatus}}</div>
-</div>
-<div class = "span8">
-    
-<div class = "text-center text-info" id = "reassessmentsTotal">Students have taken {{numOfReassessments}} reassessments so far this semester.</div>
-    {{#if currentUser}}
-    <div class = "text-center text-warning" id = "yourReassessmentsTotal">You took {{myNumOfReassessments}} of them!</div>
-    {{/if}}
 
-</div>
-</div>
+
 
 <div class = "row-fluid">
   <h2 class = "text-center">
@@ -58,7 +46,7 @@
 <template name = "studentOptionsBar">
 <div class="navbar">
   <div class="navbar-inner">
-    <a class="brand" href="/">Students:</a>
+    <a class="brand" href="/">WeinbergCloud: </a><span  id = "connectionStatus" style = "{{connectionClass}}"><span class = "text-center">{{connectionStatus}}</span></span> 
       
     <ul class="nav">
       <li class = "dropdown">
@@ -88,8 +76,8 @@
     </li>
     </ul> 
       
-    <ul class = "nav pull-right"> {{> loginButtons}}</ul>
-    <ul class = "nav pull-right" id = "reassessmentCreditsBar">Reassessment Credits:{{>myCreditsBadge}}</ul>
+    <ul class = "nav pull-right"> <div id = "loginDiv">{{> loginButtons}}</div></ul>
+    <ul class = "nav pull-right" id = "reassessmentCreditsBar">Credits:{{>myCreditsBadge}}</ul>
   </div>
 </div>
 

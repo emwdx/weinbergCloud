@@ -1,4 +1,9 @@
-
+ function isAdmin(){
+ var user = Meteor.users.findOne({_id:this.userId});
+if(user.emails[0].address=='eweinberg@scischina.org'){return true}
+else{return false}    
+          
+ }
   Meteor.startup(function () {
   if(ReviewPages.find().count()==0){
       
@@ -98,20 +103,18 @@ Meteor.publish('surveys', function() {
 });    
 
 Meteor.users.allow({
+
+update:function(userId,doc){
+var user = Meteor.users.findOne({_id:userId});
+  
+if(user.emails[0].address=='eweinberg@scischina.org'){return true}
+else{return false};
     
-  update: function(){
-      return true;
-      
-      
-      
-  },
-  remove: function(){
-      
-  return (Meteor.user().emails[0].address=='eweinberg@scischina.org');      
-      
-  }
+}
     
-})
+    
+});
+
 
 Meteor.methods({
  giveEMWCash: function(amount){

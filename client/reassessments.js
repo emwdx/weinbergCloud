@@ -178,6 +178,10 @@ Template.reassessEdit.helpers({
      return (is9|isEvan);
      }
      else{ return false}
+    },
+    
+    standardFound:function(){
+        return Session.get("standardFound");
     }
       
     
@@ -188,7 +192,7 @@ Template.reassessEdit.events({
    'click #updateReassessment': function(e){
     e.preventDefault();
     var emptyInputs = 0;
- var reassessInputs = $('.reassessSelect');
+ var reassessInputs = $('.reassessEditSelect');
  reassessInputs.each(function(){
  
  if($(this).val()==0){
@@ -216,7 +220,27 @@ Template.reassessEdit.events({
   alert("Make sure you choose something for each input.");     
      
  }
-   }
+   },
+    
+'change .reassessEditSelect':function(e){
+ 
+var inputs = $(".reassessEditSelect")
+var course = $(inputs[0]).val();
+var unit = $(inputs[1]).val();
+var standard = $(inputs[2]).val();
+var response = Standards.findOne({unit:unit,standard:standard,course:course});
+
+if(response){
+    
+Session.set("standardFound",response);    
+}
+else{
+Session.set("standardFound",false);    
+}
+    
+}
+   
+    
     
 });
     
@@ -257,6 +281,7 @@ Template.myReassessments.events({
 	 $('#reassessEdit').find('[name=standard]').val(this.standard)
 	 $('#reassessEdit').find('[name=time]').val(this.time)
 	 $('#reassessEdit').find('[name=date]').val(this.day)
+     $('#reassessEdit').find('[name=grade]').val(this.grade)
 	 Session.set('currentReassessmentDay',this.day);
      Session.set('currentReassessmentID',this._id);
     $('#reassessEdit').modal('show');

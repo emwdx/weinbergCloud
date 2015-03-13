@@ -8,7 +8,7 @@
       Meteor.subscribe('standard-links');
             
   }   
-   
+  
 
 Template.allUsers.helpers({
    
