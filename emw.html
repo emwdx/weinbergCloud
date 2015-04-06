@@ -11,7 +11,7 @@
 
 
 
-<div class = "row-fluid">
+<div class = "row">
   <h2 class = "text-center">
    {{> loggingIn}}
   {{#unless currentUser}}
@@ -29,8 +29,7 @@
   {{> studentOptionsBar}}
     {{>announcements}}
   {{> yield}}
-  {{>reassessSignUp}}
-  {{>reassessEdit}}
+ 
   {{>editUserProfile}}
   {{/if}}
   </div>
@@ -44,23 +43,37 @@
 
 
 <template name = "studentOptionsBar">
-<div class="navbar">
-  <div class="navbar-inner">
-    <a class="brand" href="/">WeinbergCloud: </a><span  id = "connectionStatus" style = "{{connectionClass}}"><span class = "text-center">{{connectionStatus}}</span></span> 
-      
-    <ul class="nav">
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class = "navbar-header">
+        
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+    </button>
+       
+    <div class="navbar-brand" >
+        <span class = "nav"> WeinbergCloud: </span>
+    </div>
+    </div> 
+     <div id="navbar" class="navbar-collapse collapse">
+       
+      <ul class="nav navbar-nav">
+      <li><a href = "#">{{>loginButtons}}{{>myCreditsBadge}}</a></li> 
+        
       <li class = "dropdown">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b>&nbsp;Reassessments</a>
       <ul class = "dropdown-menu">
-       <li id = "signUp"><a href="#reassessSignUp" data-toggle="modal">Reassessment Sign-up</a></li>
-      <li id = "myReassessments"><a href="/myReassessments/">My Reassessments</a></li>
+       <li id = "signUp"><a href="/reassess/add/" >Reassessment Sign-up</a></li>
+      <li id = "myReassessments"><a href="/myReassessments/">My Reassessments</a> </li>
       
         
         {{#if isAdmin}}
         <li id = "allReassessments"><a href="/retakes/">All Reassessments</a></li>
         <li id = "allUsers"><a href="/allUsers/">All Users</a></li>
-        <!--li id = "games"><a href = "/games/">Games</a></li-->  
-
+        <!--li id = "games"><a href = "/games/">Games</a></li--> 
         {{/if}}
         </ul>   
     </li> 
@@ -75,11 +88,15 @@
      </ul>   
     </li>
     </ul> 
-      
-    <ul class = "nav pull-right"> <div id = "loginDiv">{{> loginButtons}}</div></ul>
-    <ul class = "nav pull-right" id = "reassessmentCreditsBar">Credits:{{>myCreditsBadge}}</ul>
-  </div>
-</div>
+    
+    <ul class = "nav pull-right">
+        <li><a><span style = "{{connectionClass}}">{{connectionStatus}}</span></a> </li>
+    
+    </ul>
+    </div>  
+    </div>
+  
+</nav>
 
 </template>
 
