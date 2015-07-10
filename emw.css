@@ -30,37 +30,35 @@ body {
     color:rgb(100,100,100);
     
 }
-
-
-#addSurvey{
+.reassessmentButtons{
     
- margin:20px;
- padding:10px;
+ width:50%;   
+    
+}
+.reassessmentButtonsAdmin{
+    
+ width:30%;
+ margin:3px;
     
 }
 
-.addSurveyQuestionText{
+.reassessmentItem{
     
- width:400px;
-
-
-}
-
-#surveyContainer{
-    
- margin:20px;
- padding:10px;
- border: 1px white solid;
- border-radius: 5px;
-
-    
+ border: solid 1px white;
+ border-radius:5px;
+ margin: 5px;
+ 
     
 }
 
-.surveyQuestionTextArea{
+.userInfoItem{
+border: solid 1px white;
+ border-radius:5px;
+ margin: 5px; 
     
- width:200px;   
     
+}
+
 
 #myBet{
     
@@ -94,7 +92,6 @@ body {
 .reviewCode{
     
 color:#DDD    
-
     
 }
 
@@ -151,15 +148,16 @@ color:black;
 border-radius:5px;
 }
 
-#connectionStatus{
-display:inline;
-height:10px;
-border-radius: 10px;
-float:left;
-margin-top:10px;
-}
+
 
 #loginDiv{
 margin-top:10px;    
+    
+}
+
+.row{
+    
+ margin:5px;   
+    
     
 }
