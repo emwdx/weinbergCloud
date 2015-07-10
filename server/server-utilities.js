@@ -46,8 +46,8 @@ else{return false}
 Meteor.publish('users', function() { 
      
      
-     var currUser = Meteor.users.findOne({_id:this.userId});
-     if(currUser.emails[0].address == 'eweinberg@scischina.org'){
+     
+     if(this.userId){
      return Meteor.users.find({});
      }
      else{return null};

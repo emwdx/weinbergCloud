@@ -109,7 +109,191 @@
     {{/if}}
 </template>
 
+<<<<<<< HEAD
+<template name = "allUsers">
+<div class = "span6 offset3">
+<table class = "table ">
 
+{{#each userProfiles}}
+<tr><td>Credits:{{>creditBadge}}</td><td>{{emails.[0].address}}</td>{{#if isEvan}}<td>{{profile.realName}}</td><td>{{profile.grade}}</td><td><button class = "editProfile btn btn-small">Edit Profile</button></td>{{/if}}<td><button class = "addCredit btn-small btn">Add Credit</button></td><td><button class = "removeCredit btn-small btn">Remove Credit</button></td></tr>
+{{/each}}
+</table>
+</div>
+
+</template>
+<template name = "creditBadge">
+<span class="badge badge-inverse">{{numberOfCredits}}</span>    
+
+</template>
+<template name = "myCreditsBadge">
+<span class="badge badge-inverse">{{numberOfCredits}}</span>    
+
+</template>
+
+<template name = "editUserProfile">
+<div id="profileEdit" class="modal hide fade darkText" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="profileLabel">User Profile: {{selectedUser}} <button class = "btn" id = "profileDelete">Delete</button></h3>
+  </div>
+  <div class="modal-body">
+  
+      
+<form class="form-horizontal">
+<div class="control-group">
+<label class = "control-label">Student Name:</label> 
+<div class = "controls">
+<input type = "text" id = "profileUserName" value = "{{userName}}">
+ </div>    
+ </div> 
+
+    
+<div class="control-group">
+<label class = "control-label">Grade:</label> 
+<div class = "controls">
+<select name = "profileUserGrade" id = "profileGrade">
+<option value ="0"  selected ="selected"></option>
+<option value="9" >Grade 9</option>
+<option value="10">Grade 10</option>
+<option value="11">Grade 11</option>
+<option value="12">Grade 12</option>
+
+</select>
+ </div>
+  </div>
+
+
+</form>  
+       
+</div>
+    
+<div class="modal-footer">
+    
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id = "updateProfile">Update Profile</button>
+  </div>
+</div>
+
+
+</template>
+
+
+<template name = "surveyItem">
+
+<h3>{{itemText}}</h3>
+<input type = "text" name = "surveyQ{{itemNumber}}">
+</template>
+
+<template name = "currentSurvey">
+
+<div class = "span8 offset2">
+<div class = "row-fluid">
+    
+    {{>surveyItem}}
+</div>
+=======
+<template name = "gamesOfChance">
+
+<h1>You currently have ${{numOfWB}} of WeinbergCash.</h1>
+<span class = "text-info">Note: The current real world value of $1.00 in WeinbergCash is 0 RMB.</span>
+<hr>
+You can win more by choosing to make one of the wagers below:
+ <p>
+<h3>Your bet:</h3>    
+<input type = "number" id = "myBet" placeholder = "How much do you want to bet?" min = "0.00" max = "{{numOfWB}}" step="0.001">    
+    
+    </p>
+    <p>
+<button class = "btn btn-primary" id = "bet2x">50% probability of winning 2x your bet<br>Mr. Weinberg taxes your winnings 5%</button>
+<button class = "btn btn-primary" id = "bet3x">30% probability of winning 3x your bet<br>Mr. Weinberg taxes your winnings 2%</button>
+<button class = "btn btn-primary" id = "bet4x">25% probability of winning 4x your bet<br> No Weinberg tax!</button>
+    </p>
+   
+    
+
+
+
+</template>
+
+<template name = "allWBCTotals">
+<div class = "span6 offset3">
+<p class = "text-center">WeinbergCash Totals:</p>
+<table class = "table ">
+
+{{#each WBProfiles}}
+<tr><td><h3>{{profile.realName}}</h3></td><td><h3>${{numOfWB}}</h3></td></tr>
+{{/each}}
+</table>
+>>>>>>> development
+</div>
+
+</template>
+=======
+>>>>>>> development
+
+
+<template name = "addSurvey">
+<div class = "span8 offset2" id = "addSurvey">
+<div class = "row-fluid">
+Survey Title:
+<input type = "text" name = "addSurveyTitle" id = "addSurveyTitle"> Anonymous Survey? <input type = "checkbox" id = "addSurveyAnonymous"><p></p>Survey Alias:<input type = "text" name = "addSurveyAlias" id = "addSurveyAlias">
+Number of questions:
+<input type = "number" min = "0" name = "addSurveyLength" id = "addSurveyLength"><p></p>
+
+</div>
+
+    {{#each Questions}}
+<div class = "row-fluid">
+    {{>addSurveyTextInput}}
+</div>
+    {{/each}}
+<div class = "row-fluid">
+<button id = "addSurveySubmit">Create Survey</button>
+</div>
+</div>
+</template>
+
+<template name = "addSurveyTextInput">
+Question Text:<p></p>
+<input type = "text" name = "addSurveyQuestionText" id = "surveyQ{{index}}" class = " input addSurveyQuestionText">
+<select class = "addSurveyQuestionType">
+<option value = '1'>Text</option>  
+<option value = '2'>Paragraph</option>
+    
+</select>
+<p></p>
+</template>
+
+<template name = "showSurvey">
+
+<div id = "surveyContainer">
+
+<h2>{{title}}</h2>
+    {{#if isAnonymous}}
+    This survey is anonymous. Even though you are logged in, WeinbergCloud will not record your identity when you submit your survey.
+    {{/if}}
+    {{#unless isAnonymous}}
+    This survey will be recorded with your username.
+    {{/unless}}
+    {{>surveyShowItem questions}}
+</div>
+
+
+</template>
+
+<template name = "surveyShowItem">
+    {{#each questions}}
+    <h4>{{index}}. {{text}}</h4>   
+    {{#if isText}}
+    <input type = "text" class = "showSurveyQuestionText" id = "Q{{index}}">
+    {{/if}}
+    {{#unless isText}}
+    <textarea class = "showSurveyQuestionTextArea" id = "Q{{index}}" rows = "6" cols = "30"></textarea>
+    {{/unless}}
+    {{/each}}
+  
+</template>
+=======
 <template name = "announcements">
 <div class = "span11 offset1">
     {{{currentAnnouncement}}}
@@ -128,3 +312,16 @@
 </template>
 
 
+<<<<<<< HEAD
+<a href="{{url}}" target="_blank">Standard {{standard}}</a> -  submitted by {{author}} {{#if weinbergApproved}} <i class = "icon-ok"></i>WB{{/if}}
+      {{#if isWeinberg}} <span class = "reviewCode">{{_id}}</span>{{/if}}
+      
+     
+       
+ 
+    
+  </div>
+</template>
+
+=======
+>>>>>>> development

@@ -60,6 +60,37 @@ border: solid 1px white;
 }
 
 
+
+#addSurvey{
+    
+ margin:20px;
+ padding:10px;
+    
+}
+
+.addSurveyQuestionText{
+    
+ width:400px;
+
+
+}
+
+#surveyContainer{
+    
+ margin:20px;
+ padding:10px;
+ border: 1px white solid;
+ border-radius: 5px;
+
+    
+    
+}
+
+.surveyQuestionTextArea{
+    
+ width:200px;   
+    
+
 #myBet{
     
  width:60%;
@@ -92,6 +123,7 @@ border: solid 1px white;
 .reviewCode{
     
 color:#DDD    
+
     
 }
 
