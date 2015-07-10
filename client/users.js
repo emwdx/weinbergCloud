@@ -6,7 +6,6 @@
       Meteor.subscribe('reviewpages');
       Meteor.subscribe('standards');
       Meteor.subscribe('standard-links');
-      Meteor.subscribe('weinbergcash')
             
   }   
   

@@ -15,7 +15,7 @@ return (Meteor.user().emails[0].address=='eweinberg@scischina.org');
 
 if (Meteor.isClient) {
  
-Meteor.subscribe("users");
+
  
  Accounts.ui.config({ passwordSignupFields: 'EMAIL_ONLY'
  });
