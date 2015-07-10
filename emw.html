@@ -1,0 +1,130 @@
+<head>
+  <title>WeinbergCloud</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+</head>
+
+
+
+<template name = "mainContent">
+<div class = "container">
+
+
+
+
+<div class = "row">
+  <h2 class = "text-center">
+   {{> loggingIn}}
+  {{#unless currentUser}}
+  <div class = "text-center">
+  {{> loginButtons}}
+  </div>
+ 
+  {{/unless}}
+  </h2>
+  </div>
+  {{#if currentUser}}
+  <div class = "text-center">
+      
+  </div>
+  {{> studentOptionsBar}}
+    {{>announcements}}
+  {{> yield}}
+ 
+  {{>editUserProfile}}
+  {{/if}}
+  </div>
+
+
+
+
+</template>
+
+
+
+
+<template name = "studentOptionsBar">
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class = "navbar-header">
+        
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+    </button>
+       
+    <div class="navbar-brand" >
+        <span class = "nav"> WeinbergCloud: </span>
+    </div>
+    </div> 
+     <div id="navbar" class="navbar-collapse collapse">
+       
+      <ul class="nav navbar-nav">
+      <li><a href = "#">{{>loginButtons}}{{>myCreditsBadge}}</a></li> 
+        
+      <li class = "dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b>&nbsp;Reassessments</a>
+      <ul class = "dropdown-menu">
+       <li id = "signUp"><a href="/reassess/add/" >Reassessment Sign-up</a></li>
+      <li id = "myReassessments"><a href="/myReassessments/">My Reassessments</a> </li>
+      
+        
+        {{#if isAdmin}}
+        <li id = "allReassessments"><a href="/retakes/">All Reassessments</a></li>
+        <li id = "allUsers"><a href="/allUsers/">All Users</a></li>
+        <!--li id = "games"><a href = "/games/">Games</a></li--> 
+        {{/if}}
+        </ul>   
+    </li> 
+        
+    <li class = "dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b>&nbsp;Standards</a>    
+     <ul class = "dropdown-menu">
+         {{#if isAdmin}}
+     <li id = "addStandards"><a href="/standards/add/">Add</a></li> 
+         {{/if}}
+     <li id = "viewStandards"><a href="/standards/view/">View </a></li>
+     </ul>   
+    </li>
+    </ul> 
+    
+    <ul class = "nav pull-right">
+        <li><a><span style = "{{connectionClass}}">{{connectionStatus}}</span></a> </li>
+    
+    </ul>
+    </div>  
+    </div>
+  
+</nav>
+
+</template>
+
+
+
+<template name = "loggingIn">
+    {{#if isLoggingIn}}
+<p class = "text-center text-info">Logging in to WeinbergCloud...</p>
+    {{>spinner}}
+    {{/if}}
+</template>
+
+
+<template name = "announcements">
+<div class = "span11 offset1">
+    {{{currentAnnouncement}}}
+   
+</div>
+</template>
+
+<template name = "setAnnouncement">
+    {{#if isAdmin}}
+<div class = "span11 offset1">
+<input type = 'text' id = 'announcementText'>
+<button class = 'btn btn-primary' id = 'submitAnnouncementButton'>Set announcement</button>     
+    
+</div>
+    {{/if}}
+</template>
+
+

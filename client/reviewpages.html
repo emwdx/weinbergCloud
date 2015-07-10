@@ -1,0 +1,34 @@
+<template name = "reviewpages">
+    
+<div class = "span6 offset2">
+My Standard: <input type = 'text' id = 'reviewStandardText' placeholder = "Example: 7.2" value = {{myValue}}>  <p></p>  
+My URL: <input type = 'text' id = "reviewURL" placeholder = "Paste the address of your blog post here." value = "{{myPage}}"><p></p>
+Place this code somewhere in your blog post. Other students will need this code to vote for your page:<h4 class = "text-warning">{{myCode}}</h4>
+<button id = "submitReviewPage">Submit my URL</button>
+    <hr>
+    
+    {{#each reviewpage}}
+    {{#if shouldShow}}
+    {{>postItem}}
+    {{/if}}
+    {{/each}}
+</div>    
+</template>
+    
+<template name="postItem">
+
+  <div class="post">
+      
+     <a href="#" class="upvote btn"> {{#unless hasVoted}}⬆{{/unless}} {{#if hasVoted}}<i class = "icon-ok"></i>{{/if}}</a> 
+
+<span class="badge badge-inverse">{{votes}}</span>    
+
+<a href="{{url}}" target="_blank">Standard {{standard}}</a> -  submitted by {{author}} {{#if weinbergApproved}} <i class = "icon-ok"></i>WB{{/if}}
+      {{#if isWeinberg}} <span class = "reviewCode">{{_id}}</span>{{/if}}
+      
+     
+       
+ 
+    
+  </div>
+</template>
