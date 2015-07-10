@@ -30,6 +30,7 @@ body {
     color:rgb(100,100,100);
     
 }
+<<<<<<< HEAD
 .reassessmentButtons{
     
  width:50%;   
@@ -158,6 +159,37 @@ margin-top:10px;
 .row{
     
  margin:5px;   
+=======
+
+#addSurvey{
+    
+ margin:20px;
+ padding:10px;
+    
+}
+
+.addSurveyQuestionText{
+    
+ width:400px;
+
+
+}
+
+#surveyContainer{
+    
+ margin:20px;
+ padding:10px;
+ border: 1px white solid;
+ border-radius: 5px;
+
+    
+    
+}
+
+.surveyQuestionTextArea{
+    
+ width:200px;   
+>>>>>>> 2d08cdac06c80a007f551d7d93f2b6672ebe6a7e
     
     
 }
