@@ -3,17 +3,15 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-iron:layout
+standard-app-packages
 accounts-ui
 accounts-password
 force-ssl
 insecure
-underscore
 iron:router
-mrt:mathjax
-
 sacha:spin
-appcache
-meteor-platform
-mizzao:bootstrap-3
 logic-solver
+twbs:bootstrap
+alanning:roles
+useraccounts:bootstrap
+cfly15:manage-users
