@@ -30,6 +30,35 @@ body {
     color:rgb(100,100,100);
     
 }
+.reassessmentButtons{
+    
+ width:50%;   
+    
+}
+.reassessmentButtonsAdmin{
+    
+ width:30%;
+ margin:3px;
+    
+}
+
+.reassessmentItem{
+    
+ border: solid 1px white;
+ border-radius:5px;
+ margin: 5px;
+ 
+    
+}
+
+.userInfoItem{
+border: solid 1px white;
+ border-radius:5px;
+ margin: 5px; 
+    
+    
+}
+
 
 #myBet{
     
@@ -119,15 +148,16 @@ color:black;
 border-radius:5px;
 }
 
-#connectionStatus{
-display:inline;
-height:10px;
-border-radius: 10px;
-float:left;
-margin-top:10px;
-}
+
 
 #loginDiv{
 margin-top:10px;    
+    
+}
+
+.row{
+    
+ margin:5px;   
+    
     
 }

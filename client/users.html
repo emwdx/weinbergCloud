@@ -56,13 +56,31 @@
 
 <template name = "allUsers">
 <div class = "row">
-<div class = "span6 offset3">
-<table class = "table ">
+<div class = "col-md-12">
 
 {{#each userProfiles}}
-<tr><td>Credits:{{>creditBadge}}</td><td>{{emails.[0].address}}</td>{{#if isEvan}}<td>{{profile.realName}}</td><td>{{profile.grade}}</td><td><button class = "editProfile btn btn-small">Edit Profile</button></td>{{/if}}<td><button class = "addCredit btn-small btn">Add Credit</button></td><td><button class = "removeCredit btn-small btn">Remove Credit</button></td></tr>
+    {{>userInfoTemplate}}
 {{/each}}
-</table>
+
 </div>
 </div>
+</template>
+
+<template name = "userInfoTemplate">
+<div class = "row userInfoItem">
+
+<div class = "col-md-4">
+Credits:{{>creditBadge}}
+</div>
+<div class = "col-md-4">
+{{emails.[0].address}}
+<br>
+Name: {{profile.realName}} 
+</div>
+
+<div class = "col-md-4 ">
+<button class = "editProfile btn btn-info btn-med"><span class = "glyphicon glyphicon-pencil"></span> Profile</button><button class = "addCredit  btn btn-success btn-med"><span class = "glyphicon glyphicon-plus"></span> Credit</button><button class = "removeCredit btn btn-danger btn-med"><span class = "glyphicon glyphicon-minus"></span> Credit</button>
+</div>
+</div>
+
 </template>

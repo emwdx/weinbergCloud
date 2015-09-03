@@ -103,7 +103,8 @@ Template.reassessSignUp.helpers({
  
  Reassessments.insert(newRetake, function(error,result){
  Session.set('isSubmittingReassessment',true);    
-  if(result){$('#reassessSignUp').modal('hide');
+  if(result){
+    Router.go('/myReassessments/');  
            
                 currentCredit=Credits.findOne({user:currentUser.emails[0].address, used:0});
  
@@ -123,7 +124,7 @@ Session.set("standardFound",false);
      
   alert("Make sure you choose something for each input.");   
  }
-     
+   
  },
 'change .reassessSelect':function(e){
  
@@ -182,9 +183,19 @@ Template.reassessEdit.helpers({
     
     standardFound:function(){
         return Session.get("standardFound");
+    },
+    
+    selectedReassessment: function(){
+        
+     return Session.get('selectedReassessment')   
+        
     }
       
     
+});
+
+UI.registerHelper("selectedIf",function(value1,value2){
+  return (value1==value2)?"selected":"";
 });
     
 Template.reassessEdit.events({
@@ -203,15 +214,16 @@ Template.reassessEdit.events({
  });
     if(emptyInputs==0){
     updateReassessmentObject = {
-    course:$('#reassessEdit').find('[name=course]').val(),
-	unit: $('#reassessEdit').find('[name=unit]').val(),
-	standard:$('#reassessEdit').find('[name=standard]').val(),
-	time: $('#reassessEdit').find('[name=time]').val(),
-	day: $('#reassessEdit').find('[name=date]').val(),
-    grade:$('#reassessEdit').find('[name=grade]').val()
+    course:$('#reassessEditForm').find('[name=course]').val(),
+	unit: $('#reassessEditForm').find('[name=unit]').val(),
+	standard:$('#reassessEditForm').find('[name=standard]').val(),
+	time: $('#reassessEditForm').find('[name=time]').val(),
+	day: $('#reassessEditForm').find('[name=date]').val(),
+    grade:$('#reassessEditForm').find('[name=grade]').val()
     }
-    Reassessments.update({_id:Session.get('currentReassessmentID')},{$set:updateReassessmentObject});
-    $('#reassessEdit').modal('hide');
+    console.log(updateReassessmentObject);
+    Reassessments.update({_id:this._id},{$set:updateReassessmentObject});
+    Router.go('/myReassessments/');
        
    }
  else{
@@ -256,7 +268,7 @@ reassessments: function(){
     
 });
     
-Template.myReassessments.events({
+Template.reassessmentTemplate.events({
     
     'click .cancelReassessment': function(e){
     e.preventDefault(); 
@@ -276,16 +288,12 @@ Template.myReassessments.events({
     },
     'click .editReassessment': function(e){
      e.preventDefault();
-     $('#reassessEdit').find('[name=course]').val(this.course)
-	 $('#reassessEdit').find('[name=unit]').val(this.unit)
-	 $('#reassessEdit').find('[name=standard]').val(this.standard)
-	 $('#reassessEdit').find('[name=time]').val(this.time)
-	 $('#reassessEdit').find('[name=date]').val(this.day)
-     $('#reassessEdit').find('[name=grade]').val(this.grade)
-	 Session.set('currentReassessmentDay',this.day);
+     Session.set('selectedReassessment',this);
+     Session.set("standardFound",false); 
+     Session.set('currentReassessmentDay',this.day);
      Session.set('currentReassessmentID',this._id);
-    $('#reassessEdit').modal('show');
-        
+     Router.go('/reassess/edit/');
+       
     }
     
     
@@ -310,25 +318,44 @@ Template.showNextRetakes.events({
     'change #selectDate':function(e){
     Session.set('currentDay',$('#selectDate').val());
         
+    }
+   
+    
+    
+});
+
+Template.reassessmentAdminTemplate.events({
+ 'click .cancelReassessment': function(e){
+    e.preventDefault(); 
+    currentUser = Meteor.user();
+    if(currentUser.emails[0].address=='eweinberg@scischina.org'){
+    currentCredit = Credits.findOne({user:this.user, used:1});    
+    Credits.update({_id:currentCredit._id},{$set:{used:0}});      
+    }
+    else{
+    currentCredit = Credits.findOne({user:currentUser.emails[0].address, used:1});
+    Credits.update({_id:currentCredit._id},{$set:{used:0}});   
+  
+    
+    }
+     Reassessments.remove({_id:this._id});
+        
     },
-    'click .completeReassessment': function(e){
+    'click .editReassessment': function(e){
+     e.preventDefault();
+     Session.set('selectedReassessment',this);
+     Session.set("standardFound",false); 
+     Session.set('currentReassessmentDay',this.day);
+     Session.set('currentReassessmentID',this._id);
+     Router.go('/reassess/edit/');
+       
+    },
+     'click .completeReassessment': function(e){
     e.preventDefault();    
   
     Reassessments.update({_id:this._id},{$set:{completed:'true'}});
         
         
-    },
-    'click .cancelReassessment': function(e){
-    e.preventDefault();
-    currentUser = Meteor.user();
-    currentCredit = Credits.findOne({user:this.user, used:1});
-    Credits.update({_id:currentCredit._id},{$set:{used:0}});   
-  
-    Reassessments.remove({_id:this._id});
-        
-        
     }
-    
-    
 });
 
