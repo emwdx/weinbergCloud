@@ -1,135 +1,153 @@
 <template name = "addStandards">
-    
+
 <h3>Add standards here:</h3>
 <form class="form-horizontal">
+<div class = "row">
+  <div class = "col-md-6">
+
 <div class="control-group">
-<label class = "control-label">Course:</label> 
+<label class = "control-label">Course:</label>
 <div class = "controls">
-<select name = "addStandardCourse" class = "addStandardsInput">
+<select name = "addStandardCourse" class = " form-control">
 <option value =""  ></option>
-<option value="PHYS12" >Physics 12</option>
-<option value="IBMATH" >IB Math</option>
-<option value="IBPHYS">IB Physics</option>
-<option value="MATH10">Math 10</option>
+{{#each courseNames}}
+<option value ="{{this}}"  >{{this}}</option>
+{{/each}}
 </select>
- </div>    
- </div> 
+<input id = "addNewStandardName" placeholder = "Or add a new course name here." class = "form-control">
+ </div>
+ </div>
+ </div>
+
+ </div>
 <div class="control-group">
-<label class = "control-label">Unit:</label> 
+<label class = "control-label">Unit:</label>
 <div class = "controls">
 <input id = "addStandardUnit" name = "addStandardUnit" class = "addStandardsInput" type = "number" min = "0" max = "12">
- </div> 
+ </div>
 <p></p>
-<label class = "control-label">Standard:</label> 
+<label class = "control-label">Standard:</label>
 <div class = "controls">
 <input id ="addStandardStandard" name = "addStandardStandard" class = "addStandardsInput" type = "number" min = "0" max = "12">{{#if standardAlreadyExists}}
     <span class = "text-warning">Standard Already Exists!</span>
     {{/if}}
- </div>    
- </div> 
-    
+ </div>
+ </div>
+
 <div class="control-group">
-<label class = "control-label">Title:</label> 
+<label class = "control-label">Title:</label>
 <div class = "controls">
 <input name = "addStandardTitle" class = "addStandardsInput" type = "text" >
- </div>    
- </div> 
+ </div>
+ </div>
 <div class="control-group">
-<label class = "control-label">Description:</label> 
+<label class = "control-label">Description:</label>
 <div class = "controls">
 <textarea name = "addStandardDescription" class = "addStandardsInput" rows="4" cols = "80" ></textarea>
- </div>    
- </div> 
+ </div>
+ </div>
 <button class = "btn btn-primary" id = "addStandardsButton">Submit Standard</button>
 </form>
 
 </template>
 
 <template name = "editStandards">
-    
+
 <h3>Edit Standards:</h3>
 <form class="form-horizontal">
 <div class="control-group">
-<label class = "control-label">Course:</label> 
+<label class = "control-label">Course:</label>
 <div class = "controls">
-<select name = "editStandardCourse" class = "editStandardsInput" id = "editStandardCourse">
-<option value =""  ></option>
-<option value="PHYS12" >Physics 12</option>
-<option value="IBMATH" >IB Math</option>
-<option value="IBPHYS">IB Physics</option>
-<option value="MATH10">Math 10</option>
+<select name = "editStandardCourse" class = "editStandardsInput form-control" id = "editStandardCourse">
+<option value ="{{course}}"  >{{course}}</option>
 </select>
- </div>    
- </div> 
+ </div>
+ </div>
 <div class="control-group">
-<label class = "control-label">Unit:</label> 
+<label class = "control-label">Unit:</label>
 <div class = "controls">
 <input id = "editStandardUnit" class = "editStandardsInput" type = "number" min = "0" max = "12" value = "{{unit}}">
- </div> 
+ </div>
 <p></p>
-<label class = "control-label">Standard:</label> 
+<label class = "control-label">Standard:</label>
 <div class = "controls">
 <input id ="editStandardStandard"  class = "editStandardsInput" type = "number" min = "0" max = "12" value = "{{standard}}">
- </div>    
- </div> 
-    
+ </div>
+ </div>
+
 <div class="control-group">
-<label class = "control-label">Title:</label> 
+<label class = "control-label">Title:</label>
 <div class = "controls">
 <input id = "editStandardTitle" class = "editStandardsInput" type = "text" value = "{{title}}">
- </div>    
- </div> 
+ </div>
+ </div>
 <div class="control-group">
-<label class = "control-label">Description:</label> 
+<label class = "control-label">Description:</label>
 <div class = "controls">
 <textarea id = "editStandardDescription" class = "editStandardsInput" rows="4" cols = "80" >{{description}}</textarea>
- </div>    
- </div> 
+ </div>
+ </div>
 <button class = "btn btn-primary" id = "editStandardsButton">Update</button>
 </form>
 
 </template>
 
 <template name = "viewStandards">
-<select id = "viewStandardsSelectCourse">
+<div class = "row ">
+<div class = "col-md-6">
+<select id = "viewStandardsSelectCourse" class = "form-control">
 <option value =""  ></option>
-<option value="PHYS12" >Physics 12</option>
-<option value="IBMATH" >IB Math</option>
-<option value="IBPHYS">IB Physics</option>
-<option value="MATH10">Math 10</option>   
+{{#each courseNames}}
+<option value ="{{this}}"  >{{this}}</option>
+{{/each}}
 </select>
-<table id = "standardsTable">
+</div>
+</div>
+<div class = "row">
+  <div class = "col-md-8">
+<table id = "standardsTable" class = "table">
 <tr>
-<td>Standard</td><td>Title</td>  
-</tr>    
+<td>Active?</td><td>Standard</td><td>Title</td><td>Delete?</td>
+
+
+</tr>
 {{#each standards}}
 <tr>
-<td>{{unit}}.{{standard}} 
+<td><input type = "checkbox" class = "standardActive" {{active}}></td>
+<td>{{unit}}.{{standard}}
     {{#if isAdmin}}
-    <a href = "/standards/edit/{{course}}/{{unit}}/{{standard}}/">Edit</a>{{/if}}
-    
-    
-    </td><td><a href = "/standards/view/{{course}}/{{unit}}/{{standard}}/">{{title}}</a></td>
+    <a href = "/standards/edit/{{_id}}">Edit</a>{{/if}}
+
+
+  </td><td><a href = "/standards/view/{{_id}}">{{title}}</a></td>
+  {{#if isAdmin}}
+  <td><button class = "btn btn-small btn-danger deleteStandard">Delete</button></td>
+  {{/if}}
+
 </tr>
 {{/each}}
 </table>
-
+</div>
+</div>
 
 
 </template>
 
 <template name = "viewStandard">
 <a href = "/standards/view/"> &lt;&lt;&lt;Back</a>
-    
+
+
 <div id = "viewStandardInformation">
 <h3>{{course}} Standard {{unit}}.{{standard}}: {{title}}</h3>
-    
+
 <div id = "viewStandardDescription">
-    
+
     {{description}}
-    
+
 </div>
 </div>
+
+
     {{#if isAdmin}}
 {{>submitStandardLink}}
     {{/if}}
@@ -138,9 +156,10 @@
     {{>linkTemplate}}
     {{/each}}
 </template>
+
 <template name = "linkTemplate">
 <div class = "standardsLinkItem">
-<h4><a href = "{{url}}" target = "_blank">{{title}}</a></h4>    
+<h4><a href = "{{url}}" target = "_blank">{{title}}</a></h4>
 </div>
 
 </template>
