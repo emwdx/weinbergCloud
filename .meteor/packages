@@ -7,7 +7,6 @@ standard-app-packages
 accounts-ui
 accounts-password
 force-ssl
-insecure
 iron:router
 sacha:spin
 logic-solver
@@ -15,3 +14,4 @@ twbs:bootstrap
 alanning:roles
 useraccounts:bootstrap
 cfly15:manage-users
+reactive-var

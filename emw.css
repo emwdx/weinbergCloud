@@ -1,9 +1,9 @@
 /* CSS declarations go here */
 html{
-background:rgb(22, 56, 119); 
-  
-    
-    
+background:rgb(22, 56, 119);
+
+
+
 }
 
 body {
@@ -15,118 +15,118 @@ body {
 }
 
 #notEnoughCredits{
-    
- color:black;   
-    
+
+ color:black;
+
 }
 #reassessmentCreditsBar{
-    
+
  color:rgb(100,100,100);
  margin: 10px;
-    
+
 }
 .darkText{
-    
+
     color:rgb(100,100,100);
-    
+
 }
 .reassessmentButtons{
-    
- width:50%;   
-    
+
+ width:50%;
+
 }
 .reassessmentButtonsAdmin{
-    
+
  width:30%;
  margin:3px;
-    
+
 }
 
 .reassessmentItem{
-    
+
  border: solid 1px white;
  border-radius:5px;
  margin: 5px;
- 
-    
+
+
 }
 
 .userInfoItem{
 border: solid 1px white;
  border-radius:5px;
- margin: 5px; 
-    
-    
+ margin: 5px;
+
+
 }
 
 
 #myBet{
-    
+
  width:60%;
  font-size: 12px;
-    
+
 }
 
 #announcementText{
- 
+
     width:60%;
-    
+
 }
 #reviewStandardText{
-    
- width:20%px;   
+
+ width:20%px;
 }
 #reviewURL{
-    
- width: 80%;   
-    
+
+ width: 80%;
+
 }
 
 .post{
-    
+
  background-color: #DDD;
  color: #000;
-    
+
 }
 
 .reviewCode{
-    
-color:#DDD    
-    
+
+color:#DDD
+
 }
 
 #reassessmentsTotal{
-    
- float:left; 
+
+ float:left;
  margin-left:10px;
  margin-top:10px;
-    
+
 }
 
 #yourReassessmentsTotal{
- margin-left:10px;  
+ margin-left:10px;
  margin-top:10px;
- float:left;    
-    
+ float:left;
+
 }
 .new{
-    
+
  font-size:0.6em;
  color:red;
  margin-right:5px;
 
-    
+
 }
 
 #standardsTable{
-width:50%;
+width:90%;
 border: white solid 1px;
-    
+
 }
 
 table{
-width:80%;    
-    
+width:80%;
+
 }
 
 #viewStandardInformation{
@@ -138,7 +138,7 @@ border-radius:4px;
 padding:8px;
 }
 #submitLinkHiddenInformation{
- display:none;    
+ display:none;
 }
 
 .standardsLinkInformation{
@@ -151,13 +151,21 @@ border-radius:5px;
 
 
 #loginDiv{
-margin-top:10px;    
-    
+margin-top:10px;
+
 }
 
 .row{
-    
- margin:5px;   
-    
-    
+
+ margin:5px;
+
+
+}
+
+.background-white{
+
+background-color:#CCC;
+color:black;
+border-radius:4px;
+
 }

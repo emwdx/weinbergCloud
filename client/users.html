@@ -1,69 +1,108 @@
 <template name = "creditBadge">
-<span class="badge badge-inverse">{{numberOfCredits}}</span>    
+<span class="badge badge-inverse">{{numberOfCredits}}</span>
 
 </template>
 <template name = "myCreditsBadge">
-<span class="badge badge-inverse">{{numberOfCredits}}</span>    
+<span class="badge badge-inverse">{{numberOfCredits}}</span>
 
 </template>
 
-<template name = "editUserProfile">
-<div id="profileEdit" class="modal hide fade darkText" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="profileLabel">User Profile: {{selectedUser}} <button class = "btn" id = "profileDelete">Delete</button></h3>
-  </div>
-  <div class="modal-body">
-  
-      
-<form class="form-horizontal">
-<div class="control-group">
-<label class = "control-label">Student Name:</label> 
-<div class = "controls">
-<input type = "text" id = "profileUserName" value = "{{userName}}">
- </div>    
- </div> 
+<template name = "userProfile">
 
-    
-<div class="control-group">
-<label class = "control-label">Grade:</label> 
-<div class = "controls">
-<select name = "profileUserGrade" id = "profileGrade">
-<option value ="0"  selected ="selected"></option>
-<option value="9" >Grade 9</option>
-<option value="10">Grade 10</option>
-<option value="11">Grade 11</option>
-<option value="12">Grade 12</option>
+<form class="form-inline " id = "profile_{{_id}}">
+<div class = "row">
+<div class = "col-md-9 text-center">
 
+
+
+<div class = "form-group">
+  <button class = "btn btn-primary updateProfile">Update</button>
+<input type = "text" id = "profileUserName" value = "{{this.profile.realName}}" placeholder = "Student Name" class = "form-control">
+</div>
+<div class = "form-group">
+<select id = "userSelectTeacher" class = "form-control">
+
+  {{#each teacherUser}}
+  <option value="{{this}}" selected = "{{isEqual this ../profile.teacher}}" >{{this}}</option>
+  {{/each}}
 </select>
- </div>
-  </div>
+
+</div>
+</div>
+</div>
+<div class = "row">
+  <div class = "col-md-12 ">
+
+<label class = "control-label">Courses:</label>
+
+{{#each courses}}
 
 
-</form>  
-       
+<label class = "checkbox-inline"><input type = "checkbox" class = "userHasCourse" {{hasCourse this}}><span class = "courseName">{{this}}</span></label>
+
+
+{{/each}}
+
 </div>
-    
-<div class="modal-footer">
-    
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary" id = "updateProfile">Update Profile</button>
-  </div>
 </div>
+
+</form>
 
 
 </template>
 
 <template name = "allUsers">
+<div class = "row ">
+
+<div class = "col-md-4">
+
+<select id = "userCourseSelect" class = "reassessSelect form-control" >
+  <option value ="0"  selected ="selected"></option>
+  {{#each reassessCourse}}
+  <option value="{{this}}" >{{this}}</option>
+  {{/each}}
+
+
+</select>
+</div>
+<div class = "col-md-4">
+<select id = "userTeacherSelect" class = "reassessSelect form-control" >
+  <option value ="0"  selected ="selected"></option>
+  {{#each teacherUser}}
+  <option value="{{this}}" >{{this}}</option>
+  {{/each}}
+
+
+</select>
+</div>
+</div>
 <div class = "row">
 <div class = "col-md-12">
+  <div class="list-group" id="accordion" role="tablist" aria-multiselectable="true">
+    {{#each userProfiles}}
 
-{{#each userProfiles}}
-    {{>userInfoTemplate}}
-{{/each}}
+      <div class="panel-heading" role="tab" id="heading_{{_id}}">
+        <h4 class="panel-title">
+          <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{_id}}" aria-expanded="false" aria-controls="collapse_{{_id}}">
+            {{>userInfoTemplate}}
+          </a>
+        </h4>
+      </div>
+      <div id="collapse_{{_id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_{{_id}}">
+        <div class="list-group">
+          {{>userProfile}}
+        </div>
+      </div>
 
+
+  {{/each}}
 </div>
-</div>
+
+    </div>
+  </div>
+
+
+
 </template>
 
 <template name = "userInfoTemplate">
@@ -75,12 +114,20 @@ Credits:{{>creditBadge}}
 <div class = "col-md-4">
 {{emails.[0].address}}
 <br>
-Name: {{profile.realName}} 
+Name: {{profile.realName}}
 </div>
 
 <div class = "col-md-4 ">
-<button class = "editProfile btn btn-info btn-med"><span class = "glyphicon glyphicon-pencil"></span> Profile</button><button class = "addCredit  btn btn-success btn-med"><span class = "glyphicon glyphicon-plus"></span> Credit</button><button class = "removeCredit btn btn-danger btn-med"><span class = "glyphicon glyphicon-minus"></span> Credit</button>
+<button class = "addCredit  btn btn-success btn-med"><span class = "glyphicon glyphicon-plus"></span> Credit</button><button class = "removeCredit btn btn-danger btn-med"><span class = "glyphicon glyphicon-minus"></span> Credit</button>
 </div>
 </div>
 
+</template>
+
+<template name="adminTemplate">
+    {{#if isAdmin}}
+        {{> accountsAdmin}}
+    {{else}}
+        Must be admin to see this...
+    {{/if}}
 </template>
