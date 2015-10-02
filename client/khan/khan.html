@@ -1,0 +1,85 @@
+
+<template name = "khan">
+{{>questionAdd}}
+<hr>
+{{#each question}}
+{{>questionView}}
+{{/each}}
+
+
+<div class="exercise">
+        <div class="vars">
+
+        </div>
+
+    <div class="problems">
+        <div>
+
+        </div>
+    </div>
+
+    </div>
+  </template>
+
+  <template name = "questionAdd">
+    Variables:
+  <div class = "form-group">
+
+    <textarea id = "questionVars" class = "form-control questionEntry">
+
+    </textarea>
+
+  </div>
+Question Text:
+<div class = "form-group">
+<textarea id = "questionText" class = "form-control questionEntry"></textarea>
+</div>
+<button id = "questionPreview" class = "btn btn-info">Preview</button>
+<button id = "submitQuestion">Submit Question</button>
+
+<hr>
+Preview:
+<div class = "col-md-6">
+  {{#if questionPreview}}
+  {{#with questionPreview}}
+  <hr>
+  {{>questionView}}
+  {{/with}}
+  {{/if}}
+
+</div>
+
+  </template>
+
+
+<template name = "questionView">
+ {{>questionVars}}
+
+  <div class = "row">
+
+    <div class = "col-md-6 question">
+
+      {{{text}}}
+
+    </div>
+    <div class = "col-md-3">
+      <button class = "questionDelete btn btn-danger">Delete</button>
+    </div>
+
+  </div>
+
+</template>
+
+<template name = "questionVars">
+
+  <div class = "row">
+
+    <div class = "col-md-6 vars">
+
+      {{{vars}}}
+
+    </div>
+
+  </div>
+
+</template>

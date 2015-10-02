@@ -6,7 +6,9 @@
       Meteor.subscribe('reviewpages');
       Meteor.subscribe('standards');
       Meteor.subscribe('standard-links');
-      Meteor.subscribe('weinbergcash')
+      Meteor.subscribe('weinbergcash');
+      Meteor.subscribe('standard-links');
+      Meteor.subscribe('questions')
 
   }
 
@@ -25,7 +27,7 @@ if(Session.get('currentTeacher')!="0"){
 if(Session.get('currentCourse')!="0"){
 
   searchObject['profile.courses']=Session.get('currentCourse');
-  
+
 }
 
 
