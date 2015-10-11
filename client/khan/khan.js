@@ -6,6 +6,9 @@ console.log(t.$('#questionText').val());
 var questionObject={
 vars: t.$('#questionVars').val(),
 text: t.$('#questionText').val(),
+course:parseInt(Session.get('currentCourseUnitStandard').course),
+unit:parseInt(Session.get('currentCourseUnitStandard').unit),
+standard:parseInt(Session.get('currentCourseUnitStandard').standard),
 };
 Questions.insert(questionObject);
 
@@ -125,7 +128,7 @@ return t.answer.get();
 
 })
 
-Template.questionView.events({
+Template.khan.events({
 
 'click .questionDelete':function(e){
 e.preventDefault();
@@ -164,3 +167,65 @@ return Questions.find();
 }
 
 });
+
+Template.courseUnitStandard.helpers({
+
+courses:function(){
+
+  return getNames(Standards,'course')
+
+
+},
+units:function(){
+  var units = [];
+  var currentCourse=Session.get('currentCourseUnitStandard').course;
+  standardsCourses = Standards.find({course:currentCourse,active:true},{sort:{unit:1,standard:1}});
+  standardsCourses.forEach(function(e){
+  if(!_.contains(units,e.unit)){
+    units.push(e.unit);
+
+  }
+
+});
+return units.sort();
+},
+standards:function(){
+var units = [];
+var currentCourse=Session.get('currentCourseUnitStandard').course;
+standardsCourses = Standards.find({course:currentCourse,active:true},{sort:{unit:1,standard:1}});
+standardsCourses.forEach(function(e){
+if(!_.contains(units,e.standard)){
+  units.push(e.standard);
+
+}
+
+
+});
+
+
+
+return units.sort();
+}
+});
+
+
+Template.courseUnitStandard.events({
+
+'change .courseSelect':function(e){
+
+var template = $(e.target).parent().parent();
+
+var courseUnitStandardObject = {
+course:template.find('#courseSelectCourse').val(),
+unit:template.find('#courseSelectUnit').val(),
+standard:template.find('#courseSelectStandard').val(),
+
+}
+
+Session.set('currentCourseUnitStandard',courseUnitStandardObject);
+
+
+}
+
+
+})

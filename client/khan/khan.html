@@ -3,7 +3,16 @@
 {{>questionAdd}}
 <hr>
 {{#each question}}
+<div class = "row">
+<div class = "col-md-9">
 {{>questionView}}
+</div>
+<div class = "col-md-3">
+
+    <button class = "questionDelete btn btn-danger">Delete</button>
+
+</div>
+</div>
 {{/each}}
 
 
@@ -22,6 +31,14 @@
   </template>
 
   <template name = "questionAdd">
+<div class = "row">
+<div class = "col-md-12">
+{{>courseUnitStandard}}
+</div>
+
+</div>
+
+
     Variables:
   <div class = "form-group">
 
@@ -32,6 +49,7 @@
   </div>
 Question Text:
 <div class = "form-group">
+
 <textarea id = "questionText" class = "form-control questionEntry"></textarea>
 </div>
 <button id = "questionPreview" class = "btn btn-info">Preview</button>
@@ -57,14 +75,12 @@ Preview:
 
   <div class = "row">
 
-    <div class = "col-md-6 question">
+    <div class = "col-md-12 question">
 
       {{{text}}}
 
     </div>
-    <div class = "col-md-3">
-      <button class = "questionDelete btn btn-danger">Delete</button>
-    </div>
+
 
   </div>
 
@@ -83,3 +99,46 @@ Preview:
   </div>
 
 </template>
+
+<template name = "courseUnitStandard">
+<div class="form-inline">
+
+<div class = "form-group">
+<label class = "control-label">Course:</label>
+<select name = "course" class = "courseSelect form-control" id = "courseSelectCourse">
+
+{{#each courses}}
+<option value="{{this}}" >{{this}}</option>
+{{/each}}
+
+</select>
+ </div>
+
+ <div class="form-group">
+ <label class = "control-label">Unit:</label>
+
+ <select name = "unit" class = "courseSelect form-control" id = "courseSelectUnit">
+ <option value ="0"  selected ="selected"></option>
+ {{#each units}}
+ <option value="{{this}}" >{{this}}</option>
+ {{/each}}
+
+
+ </select>
+  </div>
+
+
+ <div class="form-group">
+ <label class = "control-label">Standard:</label>
+
+ <select name = "standard" class = "courseSelect  form-control" id = "courseSelectStandard">
+ <option value ="0"  selected ="selected"></option>
+ {{#each standards}}
+ <option value="{{this}}" >{{this}}</option>
+ {{/each}}
+
+ </select>
+  </div>
+ </div>
+
+ </template>
