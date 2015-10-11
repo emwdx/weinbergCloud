@@ -17,3 +17,4 @@ cfly15:manage-users
 reactive-var
 aramk:requirejs
 sashko:katex
+standard-minifiers
