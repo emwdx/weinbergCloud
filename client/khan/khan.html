@@ -1,33 +1,45 @@
 
-<template name = "khan">
-{{>questionAdd}}
-<hr>
+<template name = "questionsViewAll">
+  {{>questionAdd}}
+
 {{#each question}}
-<div class = "row">
-<div class = "col-md-9">
+
+<div class = "row" >
+<div class = "col-md-8 qC" id = "item-{{@index}}">
+
 {{>questionView}}
+
 </div>
-<div class = "col-md-3">
+<div class = "col-md-2">
 
     <button class = "questionDelete btn btn-danger">Delete</button>
+    <button class = "questionEdit btn btn-info">Edit</button>
+</div>
+</div>
 
-</div>
-</div>
 {{/each}}
+<hr>
+<div class = "row">
+  <div class = "col-md-4 col-md-offset-4">
+    {{>classRoster}}
+    <button class = "btn btn-primary" id = "assignQuiz">Assign</button>
+    <button class = "btn btn-warning" id = "resetQuiz">Reset</button>
+  </div>
+  <div class = "col-md-4">
+    {{#if quizzesAssigned}}
+    QuizzesAssigned to:
+    {{#each quizzesAssigned}}
+    <p>{{this}}</p>
+    {{/each}}
+    {{/if}}
+  </div>
+</div>
 
 
-<div class="exercise">
-        <div class="vars">
+  </template>
 
-        </div>
+  <template name = "questionControls">
 
-    <div class="problems">
-        <div>
-
-        </div>
-    </div>
-
-    </div>
   </template>
 
   <template name = "questionAdd">
@@ -42,15 +54,15 @@
     Variables:
   <div class = "form-group">
 
-    <textarea id = "questionVars" class = "form-control questionEntry">
-
+    <textarea id = "questionVars" class = "form-control questionEntry" >
+      {{{vars}}}
     </textarea>
 
   </div>
 Question Text:
 <div class = "form-group">
 
-<textarea id = "questionText" class = "form-control questionEntry"></textarea>
+<textarea id = "questionText" class = "form-control questionEntry">{{{text}}}</textarea>
 </div>
 <button id = "questionPreview" class = "btn btn-info">Preview</button>
 <button id = "submitQuestion">Submit Question</button>
@@ -59,10 +71,12 @@ Question Text:
 Preview:
 <div class = "col-md-6">
   {{#if questionPreview}}
+
   {{#with questionPreview}}
   <hr>
   {{>questionView}}
   {{/with}}
+
   {{/if}}
 
 </div>
@@ -71,32 +85,41 @@ Preview:
 
 
 <template name = "questionView">
+
  {{>questionVars}}
 
   <div class = "row">
 
-    <div class = "col-md-12 question">
+    <div class = "col-md-12 question" >
 
-      {{{text}}}
-
+{{course}}:{{unit}}.{{standard}}
+<div class = "questionText">
+  {{{text}}}
+</div>
+<div class = "questionAnswer">
+  Answer: <div id = "answerText">@answer</div>
+</div>
+<button class = "reloadQuestion"><span class = "glyphicon glyphicon-repeat"></span></button>
+<button class = "addToQuiz"><span class = "glyphicon glyphicon-check"></span></button>
     </div>
 
 
   </div>
+
 
 </template>
 
 <template name = "questionVars">
 
-  <div class = "row">
 
-    <div class = "col-md-6 vars">
+
+    <div class = "vars" style = "display:none">
 
       {{{vars}}}
 
     </div>
 
-  </div>
+
 
 </template>
 
@@ -106,7 +129,7 @@ Preview:
 <div class = "form-group">
 <label class = "control-label">Course:</label>
 <select name = "course" class = "courseSelect form-control" id = "courseSelectCourse">
-
+<option value = ""></option>
 {{#each courses}}
 <option value="{{this}}" >{{this}}</option>
 {{/each}}
@@ -118,7 +141,7 @@ Preview:
  <label class = "control-label">Unit:</label>
 
  <select name = "unit" class = "courseSelect form-control" id = "courseSelectUnit">
- <option value ="0"  selected ="selected"></option>
+<option value = ""></option>
  {{#each units}}
  <option value="{{this}}" >{{this}}</option>
  {{/each}}
@@ -132,7 +155,7 @@ Preview:
  <label class = "control-label">Standard:</label>
 
  <select name = "standard" class = "courseSelect  form-control" id = "courseSelectStandard">
- <option value ="0"  selected ="selected"></option>
+ <option value = ""></option>
  {{#each standards}}
  <option value="{{this}}" >{{this}}</option>
  {{/each}}
@@ -142,3 +165,166 @@ Preview:
  </div>
 
  </template>
+
+ <template name = "classRoster">
+  <select multiple id = "classRosterNames">
+
+    {{#each student}}
+    <option value = "{{_id}}">{{profile.realName}}</option>
+    {{/each}}
+  </select>
+</template>
+
+<template name = "quizzesViewAll">
+<div class = "row">
+  <div class = "col-md-8">
+    Pending Quizzes:
+    <table class = "table">
+     <tr>
+       <td>Date</td>
+       <td>Name</td>
+       <td>Course</td>
+       <td>Standards</td>
+       <td>Active?</td>
+       <td>Completed?</td>
+     </tr>
+     {{#each incompleteQuizzes}}
+     <tr>
+       <td><a href = "/quizzes/view/{{_id}}">{{shortenDate created}}</a></td>
+       <td>{{getUsername user}}</td>
+       <td>{{courses}}</td>
+       <td>{{standards}}</td>
+       <td><input type = "checkbox" class = "quizVisible" {{active}}></td>
+       <td><button class = "btn btn-primary quizCompleted" >Completed</button><button class = "btn btn-danger quizDelete" >Delete</button></td>
+     </tr>
+     {{/each}}
+    </table>
+  </div>
+</div>
+
+
+  <div class = "row">
+    <div class = "col-md-8">
+      Completed Quizzes:
+  <table class = "table">
+   <tr>
+     <td>Date</td>
+     <td>Name</td>
+     <td>Course</td>
+     <td>Standards</td>
+     <td>Active?</td>
+     <td>Completed?</td>
+   </tr>
+   {{#each completeQuizzes}}
+   <tr>
+     <td><a href = "/quizzes/view/{{_id}}">{{shortenDate created}}</a></td>
+     <td>{{getUsername user}}</td>
+     <td>{{courses}}</td>
+     <td>{{standards}}</td>
+     <td><input type = "checkbox" class = "quizVisible" {{active}}></td>
+     <td><button class = "btn btn-primary quizNotCompleted" >Not Complete</button><button class = "btn btn-danger quizDelete" >Delete</button></td>
+   </tr>
+   {{/each}}
+  </table>
+</div>
+</div>
+</template>
+
+<template name = "quizView">
+<div id = "quizBackground">
+
+{{#if quizVisible}}
+  {{#if adminView}}
+  This quiz is not yet visible to the student.
+  {{/if}}
+  <div class = "row">
+    <div class = "col-md-4 quizHeading">
+      {{getUsername user}}
+    </div>
+    <div class = "col-md-4 quizHeading">
+      Course(s): {{courses}}
+    </div>
+    <div class = "col-md-4 quizHeading">
+      Standard(s): {{standards}}
+    </div>
+  </div>
+{{#each questions}}
+{{>quizQuestionView}}
+{{/each}}
+{{/if}}
+{{#unless quizVisible}}
+<div class = "row">
+  <div class = "col-md-12 text-center">
+    <h3>This quiz is not yet visible. Check back soon!</h3>
+  </div>
+</div>
+{{/unless}}
+</div>
+</template>
+
+<template name = "quizQuestionView">
+<div class = "row quizQuestionDisplay">
+  <div class = "col-md-12 question">
+    {{{text}}}
+  </div>
+</div>
+{{#if answerVisible}}
+<div class = "row quizAnswerDisplay">
+  <div class = "col-md-12 question">
+    Answer: <ans>{{{answer}}}</ans>
+  </div>
+</div>
+{{/if}}
+
+</template>
+
+<template name = "quizzesViewMine">
+<div class = "row">
+  <div class = "col-md-8">
+    Pending Quizzes:
+    <table class = "table">
+     <tr>
+       <td>Date</td>
+       <td>Name</td>
+       <td>Course</td>
+       <td>Standards</td>
+
+     </tr>
+     {{#each incompleteQuizzes}}
+     <tr>
+       <td><a href = "/quizzes/view/{{_id}}">{{shortenDate created}} - View Quiz</a></td>
+       <td>{{getUsername user}}</td>
+       <td>{{courses}}</td>
+       <td>{{standards}}</td>
+
+     </tr>
+     {{/each}}
+    </table>
+  </div>
+</div>
+
+
+  <div class = "row">
+    <div class = "col-md-8">
+      Completed Quizzes:
+  <table class = "table">
+   <tr>
+     <td>Date</td>
+     <td>Name</td>
+     <td>Course</td>
+     <td>Standards</td>
+
+   </tr>
+   {{#each completeQuizzes}}
+   <tr>
+     <td><a href = "/quizzes/view/{{_id}}">{{shortenDate created}} - View Quiz</a></td>
+     <td>{{getUsername user}}</td>
+     <td>{{courses}}</td>
+     <td>{{standards}}</td>
+
+   </tr>
+   {{/each}}
+  </table>
+</div>
+</div>
+</template>

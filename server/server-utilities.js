@@ -75,7 +75,7 @@ Meteor.publish('questions', function() {
 
 
    }
-   
+
   else{
 
     return null};
@@ -129,6 +129,28 @@ Meteor.publish('credits', function() {
 
       }
      return Credits.find({schoolYear:"15-16"});
+     }
+     else{return null};
+});
+
+Meteor.publish('quizzes', function() {
+
+
+
+     if(this.userId){
+      var currentUser = Meteor.users.findOne({_id:this.userId});
+      if(Roles.userIsInRole(this.userId,['admin','teacher'])){
+
+        return Quizzes.find({schoolYear:"15-16"});
+
+      }
+      else{
+
+        return Quizzes.find({schoolYear:"15-16",user:currentUser._id});
+
+
+      }
+
      }
      else{return null};
 });
@@ -267,6 +289,47 @@ return Roles.userIsInRole(userId,['teacher','admin']);
 });
 
 Questions.allow({
+
+insert: function(userId){
+
+
+return Roles.userIsInRole(userId,['teacher','admin']);
+
+},
+update: function(userId){
+
+return Roles.userIsInRole(userId,['teacher','admin']);
+
+},
+remove: function(userId){
+
+return Roles.userIsInRole(userId,['teacher','admin']);
+
+}
+
+});
+Quizzes.allow({
+
+insert: function(userId){
+
+
+return Roles.userIsInRole(userId,['teacher','admin']);
+
+},
+update: function(userId){
+
+return Roles.userIsInRole(userId,['teacher','admin']);
+
+},
+remove: function(userId){
+
+return Roles.userIsInRole(userId,['teacher','admin']);
+
+}
+
+});
+
+systemVariables.allow({
 
 insert: function(userId){
 

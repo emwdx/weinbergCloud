@@ -51,7 +51,7 @@ Template.reassessSignUp.helpers({
   hasEnoughCredits: function(){
      var currentUser = Meteor.user()
      var currentCourse = Session.get('currentCourse');
-     allCredits = Credits.find({user:currentUser.emails[0].address,used:false,course:currentCourse}).fetch();
+     allCredits = Credits.find({user:currentUser.emails[0].address,$and:[{used:false},{expired:false}],course:currentCourse}).fetch();
      numOfCredits = allCredits.length;
      return (numOfCredits>0);
 
@@ -142,7 +142,7 @@ Template.reassessSignUp.helpers({
  });
 
  if(emptyInputs<1){
- var currentCredit=Credits.findOne({user:currentUser.emails[0].address, used:false,course:Session.get('currentCourse')});
+ var currentCredit=Credits.find({user:currentUser.emails[0].address,$and:[{used:false},{expired:false}] ,course:Session.get('currentCourse')},{sort:{expiresOn:1}}).fetch()[0];
  var newRetake = {
                 course: $('body').find('[name=course]').val(),
 				unit: parseInt($('body').find('[name=unit]').val()),
@@ -381,9 +381,14 @@ $('#reassessEditForm').find('[name=standard]').val(currentReassessment.standard)
 
 Template.myReassessments.helpers({
 
-reassessments: function(){
+upcomingReassessments: function(){
 
     return Reassessments.find({user:Meteor.user().emails[0].address,completed:false});
+
+},
+completedReassessments:function(){
+
+    return Reassessments.find({user:Meteor.user().emails[0].address,completed:true});
 
 }
 
@@ -502,7 +507,163 @@ Template.reassessmentAdminTemplate.events({
     e.preventDefault();
 
     Reassessments.update({_id:this._id},{$set:{completed:true}});
+    var usedCredit = Reassessments.findOne({_id:this.credit});
+
+    Credits.update({_id:usedCredit},{$set:{used:true}});
 
 
     }
 });
+
+Template.myCredits.helpers({
+myUnusedCredits:function(){
+
+  var searchObject = {};
+currentUser = Meteor.user();
+if(Roles.userIsInRole(currentUser,['teacher','admin'])){
+
+  if(Session.get('currentCourse')!="0"){
+
+    searchObject['course']=Session.get('currentCourse');
+
+  }
+
+
+}
+else{
+
+searchObject['user']=Meteor.user().emails[0].address;
+
+
+}
+searchObject['$and']=[{used:false},{expired:false}];
+return Credits.find(searchObject,{sort:{createdOn:1}});
+
+
+},
+myUsedCredits:function(){
+
+
+    var searchObject = {};
+
+if(Roles.userIsInRole(currentUser,['teacher','admin'])){
+
+
+    if(Session.get('currentCourse')!="0"){
+
+      searchObject['course']=Session.get('currentCourse');
+
+    }
+}
+
+else{
+searchObject['user']=Meteor.user().emails[0].address;
+
+}
+  searchObject['$or']=[{used:true},{expired:true}];
+
+return Credits.find(searchObject,{sort:{createdOn:-1}});
+
+},
+
+reassessSummary:function(){
+
+var reassess = Reassessments.findOne({credit:this._id});
+var dateArray = new Date(reassess.day).toDateString().split(" ");
+var dateString = dateArray[1]+ ' ' + dateArray[2];
+return dateString + " - " + reassess.course + " " + reassess.unit+"."+reassess.standard;
+
+
+},
+expirationLength:function(){
+
+  var lifetime = systemVariables.findOne({name:'creditLifetime'});
+  if(lifetime){
+  return lifetime.value;
+}
+
+},
+hasExpired:function(){
+
+var expiredDate = new Date(this.expiresOn);
+var currentDate = new Date();
+return currentDate>expiredDate;
+
+}
+
+
+})
+
+Template.myCredits.events({
+
+'click .expireCredit':function(e){
+e.preventDefault();
+Credits.update({_id:this._id},{$set:{expired:true}});
+
+
+},
+'click .restoreCredit':function(e){
+e.preventDefault();
+Credits.update({_id:this._id},{$set:{expired:false}});
+
+
+},
+'change .creditExpiresDate':function(e){
+e.preventDefault();
+var changedDate = $(e.target).val();
+Credits.update({_id:this._id},{$set:{expiresOn:changedDate}});
+
+
+},
+'change #creditLifetime':function(e){
+  e.preventDefault();
+  var changedLife = parseInt($(e.target).val());
+
+  var lifetime = systemVariables.findOne({name:'creditLifetime'});
+  if(lifetime){
+  systemVariables.update({_id:lifetime._id},{$set:{value:changedLife}});
+}
+else{
+systemVariables.insert({name:'creditLifetime',value:10})
+
+
+}
+
+},
+'click .defaultExpiration':function(e){
+
+var createdDate = new Date(this.createdOn);
+var lifetime = systemVariables.findOne({name:'creditLifetime'});
+
+var newExpiration = new Date((createdDate.getTime() + lifetime.value*86400*1000));
+Credits.update({_id:this._id},{$set:{expiresOn:newExpiration}});
+
+
+
+},
+'click #assignBulkExpiration':function(e){
+e.preventDefault();
+var lifetime = systemVariables.findOne({name:'creditLifetime'});
+var yes = confirm("Are you sure you want to reset all expiration dates?");
+if(yes){
+var allCredits = Credits.find({used:false});
+allCredits.forEach(function(e){
+var createdDate = new Date(e.createdOn);
+var newExpiration = new Date((createdDate.getTime() + lifetime.value*86400*1000));
+Credits.update({_id:e._id},{$set:{expiresOn:newExpiration,expired:false}});
+
+
+
+})
+
+
+
+}
+
+
+
+}
+
+
+
+})
