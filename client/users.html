@@ -52,30 +52,7 @@
 </template>
 
 <template name = "allUsers">
-<div class = "row ">
-
-<div class = "col-md-4">
-
-<select id = "userCourseSelect" class = "reassessSelect form-control" >
-  <option value ="0"  selected ="selected"></option>
-  {{#each reassessCourse}}
-  <option value="{{this}}" >{{this}}</option>
-  {{/each}}
-
-
-</select>
-</div>
-<div class = "col-md-4">
-<select id = "userTeacherSelect" class = "reassessSelect form-control" >
-  <option value ="0"  selected ="selected"></option>
-  {{#each teacherUser}}
-  <option value="{{this}}" >{{this}}</option>
-  {{/each}}
-
-
-</select>
-</div>
-</div>
+{{>allUserSelect}}
 <div class = "row">
 <div class = "col-md-12">
   <div class="list-group" id="accordion" role="tablist" aria-multiselectable="true">
@@ -130,4 +107,32 @@ Name: {{profile.realName}}
     {{else}}
         Must be admin to see this...
     {{/if}}
+</template>
+
+<template name = "allUserSelect">
+  <div class = "row ">
+
+  <div class = "col-md-4">
+
+  <select id = "userCourseSelect" class = "reassessSelect form-control" >
+    <option value ="0"  selected ="selected"></option>
+    {{#each reassessCourse}}
+    <option value="{{this}}" >{{this}}</option>
+    {{/each}}
+
+
+  </select>
+  </div>
+  <div class = "col-md-4">
+  <select id = "userTeacherSelect" class = "reassessSelect form-control" >
+    <option value ="0"  selected ="selected"></option>
+    {{#each teacherUser}}
+    <option value="{{this}}" >{{this}}</option>
+    {{/each}}
+
+
+  </select>
+  </div>
+  </div>
+
 </template>

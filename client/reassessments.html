@@ -312,7 +312,12 @@
 <div class = "span8 offset2">
 My upcoming reassessments:
 <table class = "table table-condensed">
-{{#each reassessments}}
+{{#each upcomingReassessments}}
+    {{>reassessmentTemplate}}
+{{/each}}
+<hr>
+My completed reassessments:
+{{#each completedReassessments}}
     {{>reassessmentTemplate}}
 {{/each}}
 </table>
@@ -329,7 +334,9 @@ My upcoming reassessments:
     {{course}} Standard {{unit}}.{{standard}}
 </div>
 <div class = "col-md-4">
+{{#unless completed}}
 <button class = "btn cancelReassessment btn-danger reassessmentButtons">Cancel</button><button class = "btn editReassessment btn-info reassessmentButtons">Edit</button>
+{{/unless}}
 </div>
 </div>
 </template>
@@ -385,4 +392,90 @@ My upcoming reassessments:
 {{/each}}
 
 
+</template>
+
+<template name = "myCredits">
+  {{#if isAdmin}}
+  {{>allUserSelect}}
+  <div class = "row">
+    <div class = "col-md-6 col-md-offset-3">
+
+
+        credits last:
+      <input type = "number" value = "{{expirationLength}}" id = "creditLifetime" style = "width:40px"> days
+       <button id = "assignBulkExpiration">Batch Set Default Expiration</button>
+    </div>
+  </div>
+  {{/if}}
+<div class = "row">
+  <div class = "col-md-8 col-md-offset-2">
+    My unused credits:
+    <table class = "borderedTable">
+    <tr>
+    <td>Course:</td>
+    {{#if isAdmin}}<td>User</td>{{/if}}
+    <td>Received on:</td>
+    <td>Expires on:</td>
+    </tr>
+    {{#each myUnusedCredits}}
+    <tr>
+    <td>{{course}}</td>
+    {{#if isAdmin}}<td>{{getName user}}</td>{{/if}}
+    <td>{{shortenDate createdOn}}</td>
+    {{#unless isTeacher}}
+     <td class = "{{hasExpired}}">{{shortenDate expiresOn}}</td>
+     {{/unless}}
+     {{#if isAdmin}}
+     <input type = "date" value = "{{getDate expiresOn}}" class = "creditExpiresDate">
+     <button class = "btn-small expireCredit"><span class = "glyphicon glyphicon-fire text-danger"></span></button>
+     <button class = "btn-small defaultExpiration"><span class = "glyphicon glyphicon-asterisk text-success"></span></button>
+     {{#if hasExpired}}<span class = "text-danger glyphicon glyphicon-exclamation-sign"></span>{{/if}}
+     {{/if}}
+  </tr>
+    {{/each}}
+
+    </table>
+  </div>
+</div>
+<div class = "row">
+
+  <div class = "col-md-8 col-md-offset-2">
+    My used credits:
+    <table class = "bordered-table">
+    <tr>
+    <td>Course:</td>
+    {{#if isAdmin}}<td>User</td>{{/if}}
+    <td>Created:</td>
+    <td>Status:</td>
+    </tr>
+    {{#each myUsedCredits}}
+    <tr>
+    <td>{{course}}</td>
+    {{#if isAdmin}}<td>{{getName user}}</td>{{/if}}
+    <td>{{shortenDate createdOn}}</td>
+
+     <td>
+       {{#unless isTeacher}}
+       {{#if expired}}Expired {{shortenDate expiresOn}}{{/if}}
+       {{#if used}}{{reassessSummary}}{{/if}}
+
+
+
+     {{/unless}}
+     {{#if isTeacher}}
+
+     {{#if expired}}
+     Expired: {{shortenDate expiresOn}}
+     <button class = "btn-small restoreCredit"><span class = "glyphicon glyphicon-flash"></span></button>{{/if}}
+     {{#if used}}
+     Used {{reassessSummary}}
+     {{/if}}
+     {{/if}}
+     </td>
+    </tr>
+    {{/each}}
+
+    </table>
+  </div>
+</div>
 </template>

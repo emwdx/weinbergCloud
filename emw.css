@@ -8,7 +8,7 @@ background:rgb(22, 56, 119);
 
 body {
     margin:20px;
-    font-family: Futura;
+    font-family: 'Roboto', sans-serif;
     background:transparent;
     color: #CCCCCC;
     width:90%;
@@ -125,7 +125,7 @@ border: white solid 1px;
 }
 
 table{
-width:80%;
+width:100%;
 
 }
 
@@ -167,5 +167,73 @@ margin-top:10px;
 background-color:#CCC;
 color:black;
 border-radius:4px;
+
+}
+
+button{
+
+color:black;
+
+}
+
+tr{
+  border: white solid 1px;
+
+
+
+}
+
+.creditExpiresDate{
+
+width:100px;
+
+}
+.expireCredit{
+text-align: center;
+width:30px;
+margin:5px;
+
+}
+.defaultExpiration{
+text-align: center;
+width:30px;
+margin:5px;
+
+}
+.restoreCredit{
+text-align: center;
+width:30px;
+margin:5px;
+
+}
+.quizQuestionSelected{
+background-color:#222;
+border-radius:5px;
+
+
+}
+
+#quizBackground{
+background-color:white;
+color:black;
+border-radius:10px;
+padding:10px;
+
+}
+
+.quizQuestionDisplay{
+
+padding:10px;
+margin:10px;
+font-size: 24px;
+border-top: 1px solid black;
+min-height:100px;
+
+}
+
+.desmos-container{
+
+height:400px;
+
 
 }

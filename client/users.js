@@ -6,7 +6,10 @@
       Meteor.subscribe('reviewpages');
       Meteor.subscribe('standards');
       Meteor.subscribe('standard-links');
-      Meteor.subscribe('weinbergcash')
+      Meteor.subscribe('weinbergcash');
+      Meteor.subscribe('standard-links');
+      Meteor.subscribe('questions');
+      Meteor.subscribe('quizzes');
 
   }
 
@@ -25,46 +28,13 @@ if(Session.get('currentTeacher')!="0"){
 if(Session.get('currentCourse')!="0"){
 
   searchObject['profile.courses']=Session.get('currentCourse');
-  
+
 }
 
 
 
  return Meteor.users.find(searchObject);
-},
-
-     reassessCourse:function(){
-       var teacherCourses = Meteor.user().profile.courses;
-       var courses = [];
-       standardsCourses = Standards.find({course:{$in:teacherCourses}});
-       standardsCourses.forEach(function(e){
-       if(!_.contains(courses,e.course)){
-         courses.push(e.course);
-
-       }
-
-     });
-
-     return courses;
-
-   },
-   teacherUser: function(){
-     var teachers = [];
-     teacherUsers = Roles.getUsersInRole(['teacher','admin']);
-
-     teacherUsers.forEach(function(e){
-      var currentTeacher = Meteor.users.findOne({_id:e._id});
-     if(!_.contains(teachers,currentTeacher.emails[0].address)){
-       teachers.push(currentTeacher.emails[0].address);
-
-     }
-
-   });
-
-   return teachers;
-
-
- }
+}
 
 
 
@@ -79,15 +49,20 @@ e.preventDefault();
 e.stopPropagation();
 
 if($('#userCourseSelect').val()!=''){
+  var lifetime = systemVariables.findOne({name:'creditLifetime'});
+  var createdOn = new Date();
+  var newExpiration = new Date((createdOn.getTime() + lifetime.value*86400*1000));
 
   var currentUser = Meteor.user();
   var newCreditObject = {
   user: this.emails[0].address,
   credits:1,
   used: false,
-  createdOn: new Date(),
+  createdOn: createdOn,
   schoolYear:"15-16",
-  course:Session.get('currentCourse')
+  course:Session.get('currentCourse'),
+  expired:false,
+  expiresOn:newExpiration
   }
 
 Credits.insert(newCreditObject);
@@ -121,37 +96,21 @@ alert('Select which course you want to assign credits.')
 
 }
 
-},
-
-
-'change #userCourseSelect':function(e){
-e.preventDefault();
-Session.set('currentCourse',$(e.target).val());
-
-},
-'change #userTeacherSelect':function(e){
-e.preventDefault();
-Session.set('currentTeacher',$(e.target).val());
-
-
 }
+
+
 
 });
 
 
-Template.allUsers.rendered = function(){
 
-$('#userCourseSelect').val(Session.get('currentCourse'));
-$('#userTeacherSelect').val(Meteor.user().emails[0].address);
-
-};
 
 Template.creditBadge.helpers({
 
 numberOfCredits: function(){
      currentUser = Meteor.users.findOne({_id:this._id})
      currentCourse = Session.get('currentCourse');
-     allCredits = Credits.find({user:currentUser.emails[0].address,used:false,course:currentCourse}).fetch();
+     allCredits = Credits.find({user:currentUser.emails[0].address,$and:[{used:false},{expired:false}],course:currentCourse}).fetch();
      numOfCredits = allCredits.length;
      return numOfCredits;
 
@@ -164,7 +123,7 @@ Template.myCreditsBadge.helpers({
 numberOfCredits: function(){
      currentUser = Meteor.user();
      currentCourse = Session.get('currentCourse');
-     allCredits = Credits.find({user:currentUser.emails[0].address,used:false,course:currentCourse}).fetch();
+     allCredits = Credits.find({user:currentUser.emails[0].address,$and:[{used:false},{expired:false}],course:currentCourse}).fetch();
      numOfCredits = allCredits.length;
      return numOfCredits;
 
@@ -263,3 +222,68 @@ Template.userProfile.onRendered(function(){
 this.courses.set(this.data.profile.courses);
 
 })
+
+Template.allUserSelect.helpers({
+  reassessCourse:function(){
+    var teacherCourses = Meteor.user().profile.courses;
+    var courses = [];
+    standardsCourses = Standards.find({course:{$in:teacherCourses}});
+    standardsCourses.forEach(function(e){
+    if(!_.contains(courses,e.course)){
+      courses.push(e.course);
+
+    }
+
+  });
+
+  return courses;
+
+},
+teacherUser: function(){
+  var teachers = [];
+  teacherUsers = Roles.getUsersInRole(['teacher','admin']);
+
+  teacherUsers.forEach(function(e){
+   var currentTeacher = Meteor.users.findOne({_id:e._id});
+  if(!_.contains(teachers,currentTeacher.emails[0].address)){
+    teachers.push(currentTeacher.emails[0].address);
+
+  }
+
+});
+
+return teachers;
+
+
+}
+
+
+
+
+
+});
+
+Template.allUserSelect.events({
+
+  'change #userCourseSelect':function(e){
+  e.preventDefault();
+  Session.set('currentCourse',$(e.target).val());
+
+  },
+  'change #userTeacherSelect':function(e){
+  e.preventDefault();
+  Session.set('currentTeacher',$(e.target).val());
+
+
+  }
+
+
+})
+
+Template.allUserSelect.rendered = function(){
+
+$('#userCourseSelect').val(Session.get('currentCourse'));
+$('#userTeacherSelect').val(Meteor.user().emails[0].address);
+Session.set('currentTeacher',Meteor.user().emails[0].address);
+
+};

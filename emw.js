@@ -2,6 +2,8 @@
 
 if (Meteor.isClient) {
 
+
+$.extend(Kh,KhanUtil);
 Meteor.subscribe("users");
 
  Accounts.ui.config({ passwordSignupFields: 'EMAIL_ONLY'
