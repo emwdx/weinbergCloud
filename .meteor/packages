@@ -18,6 +18,5 @@ reactive-var
 sashko:katex
 standard-minifiers
 underscore
-react
 jquery
 clubfest:raphael

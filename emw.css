@@ -8,7 +8,7 @@ background:rgb(22, 56, 119);
 
 body {
     margin:20px;
-    font-family: Futura;
+    font-family: 'Roboto', sans-serif;
     background:transparent;
     color: #CCCCCC;
     width:90%;
@@ -228,5 +228,12 @@ margin:10px;
 font-size: 24px;
 border-top: 1px solid black;
 min-height:100px;
+
+}
+
+.desmos-container{
+
+height:400px;
+
 
 }
