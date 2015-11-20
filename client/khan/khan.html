@@ -50,44 +50,55 @@
 
 </div>
 
-
+<div class = "row">
+<div class = "col-md-12">
     Variables:
   <div class = "form-group">
 
-    <textarea id = "questionVars" class = "form-control questionEntry" >
-      {{{vars}}}
+    <textarea id = "questionVars" class = "form-control questionEntry" >      {{{vars}}}
     </textarea>
 
   </div>
 Question Text:
 <div class = "form-group">
 
-<textarea id = "questionText" class = "form-control questionEntry">{{{text}}}</textarea>
+<textarea id = "questionText" class = "form-control questionEntry">
+  {{{text}}} </textarea>
 </div>
-<button id = "questionPreview" class = "btn btn-info">Preview</button>
+
 <button id = "submitQuestion">Submit Question</button>
 
+</div>
+</div>
 <hr>
-Preview:
+<div class = "row">
+<div class = "col-md-12">
+
+
 <div class = "col-md-6">
-  {{#if questionPreview}}
 
-  {{#with questionPreview}}
-  <hr>
-  {{>questionView}}
-  {{/with}}
+   Preview:
 
-  {{/if}}
+  <div id = "questionPreviewContent">
+
+  {{>questionPreview}}
 
 </div>
 
+
+
+
+</div>
+</div>
+</div>
+<hr>
   </template>
 
 
 <template name = "questionView">
-
+<div class = "questionVarsHidden">
  {{>questionVars}}
-
+</div>
   <div class = "row">
 
     <div class = "col-md-12 question" >
@@ -109,9 +120,48 @@ Preview:
 
 </template>
 
+<template name = "questionPreview">
+<button id = "questionPreview" class = "btn btn-info">Preview</button>
+  Code ok?
+  {{#if noCodeError}}
+  <span class = "glyphicon glyphicon-ok"></span>
+  {{/if}}
+  {{#unless noCodeError}}
+  <span class = "glyphicon glyphicon-remove"></span>
+  {{/unless}}
+  <div class = "questionVarsHidden">
+    <div class = "vars" style = "display:none">
+    {{{previewVars}}}
+
+
+    </div>
+
+  </div>
+    <div class = "row">
+
+      <div class = "col-md-12 question" >
+
+  <div class = "questionText">
+{{{previewText}}}
+
+
+
+  </div>
+  <div class = "questionAnswer">
+    Answer: <div id = "answerText">
+{{{previewAnswer}}}
+
+    </div>
+  </div>
+
+      </div>
+
+
+    </div>
+
+</template>
+
 <template name = "questionVars">
-
-
 
     <div class = "vars" style = "display:none">
 
@@ -342,4 +392,8 @@ Preview:
 <template name = "desmos">
   Desmos:
   {{>desmosView}}
+</template>
+
+<template name = "equationBlock">
+  {{{this}}}
 </template>

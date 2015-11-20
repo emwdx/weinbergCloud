@@ -17,19 +17,29 @@ var currentQuestionID = Session.get('currentQuestion');
 var retrievedQ = Questions.findOne({_id:currentQuestionID});
 if(retrievedQ){
 
-Questions.update({_id:currentQuestionID},{$set:questionObject});
-Router.go('/khan/');
+Questions.update({_id:currentQuestionID},{$set:questionObject},function(error,result){
+
+if(result){Router.go('/khan/');}
+
+});
+
 }
 else{
-Questions.insert(questionObject);
+Questions.insert(questionObject,function(error,result){
+
+if(result){alert("Success!")};
+
+});
 
 }
 
 },
 
-'click #questionPreview':function(e,t){
+
+'change #questionVars, change #questionText':function(e,t){
 e.preventDefault();
-Session.set('questionPreview',"");
+
+
   var questionObject={
   vars: t.$('#questionVars').val(),
   text: t.$('#questionText').val(),
@@ -41,162 +51,113 @@ Session.set('questionPreview',questionObject);
   }
   else{
 
- Session.set('questionPreview',"");
+ Session.set('questionPreview',{vars:"",text:""});
 
   }
 
+
+
+
 }
 
 
 });
 
-Template.questionAdd.helpers({
-
-questionPreview:function(){
 
 
-return Session.get('questionPreview');
+Template.questionView.onRendered(function(){
+var template = this;
+  renderQuestion();
+  renderEquations(template);
+
+});
+
+Template.questionPreview.onRendered(function(){
+  var template = this;
+  Session.set('previewObject',{previewText:"",previewAnswer:"",previewVars:""});
+  Session.set('questionPreview',undefined)
 
 
+template.autorun(function(){
+  //console.log('rendered');
+  var previewExists = Session.get('previewObject');
+  renderEquations(template);
+});
+
+
+});
+
+
+
+Template.questionPreview.events({
+  'click #questionPreview':function(e,t){
+  e.preventDefault();
+
+    var questionObject={
+    vars: $('#questionVars').val(),
+    text: $('#questionText').val(),
+    };
+
+    if(questionObject.vars!=''&&questionObject.text!=''){
+  Session.set('questionPreview',questionObject);
+
+    }
+    else{
+
+   Session.set('questionPreview',{text:"",vars:""});
+
+    }
+Session.set('previewObject',{previewText:"",previewAnswer:"",previewVars:""});
+  rendQ(Template.instance());
+  //renderEquations(Template.instance());
+  //console.log(Session.get('questionPreview'));
+  //console.log(questionObject);
+
+  //Blaze.renderWithData(Template.questionPreview, Template.currentData(),document.querySelector(("#"+a)));
+
+
+  },
+})
+
+Template.questionPreview.helpers({
+
+previewText:function(){
+
+
+var result = Session.get('previewObject');
+if(result){return result.text}
+//console.log('not found');
+return "";
+
+},
+previewAnswer: function(){
+  var result = Session.get('previewObject')
+  if(result){return result.answer}
+//console.log('not found');
+  return "";
+
+
+},
+previewVars: function(){
+var result = Session.get('questionPreview')
+if(result){return result.vars}
+console.log('not found');
+return "";
+
+},
+reloading:function(){
+
+return Session.get('reloadingQuestion');
+
+},
+
+noCodeError:function(){
+
+return Session.equals('codeError',false);
 }
 
 
 })
-
-Template.questionView.onRendered(function(t){
-  Session.set('reloadingQuestion',true);
-  var vars = Template.instance().findAll('var');
-
-  var varNames = []
-
-  vars.forEach(function(e){
-  //if($(e).attr('id')!='answer'){
-  Template.instance()[$(e).attr('id')]=new ReactiveVar();
-  var varText = $(e).html().replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-
-  varNames.forEach(function(e){
-
-  var re = new RegExp("@"+e+'\\b',"g")
-  var insertArray = (typeof(Template.instance()[e].get())=='object')?("["+ Template.instance()[e].get()+"]") : Template.instance()[e].get();
-  varText = varText.replace(re,insertArray);
-
-});
-console.log(varText+" var");
-
-if($(e).attr('id')!='answer'){
-
-  Template.instance()[$(e).attr('id')].set(eval(varText));
-
-}
-  varNames.push($(e).attr('id'))
-
-
-
-
-
-//}
-//else{
-
-   var answerText = $(vars[vars.length - 1]).html();
-
-/*
-  console.log(answerText);
-
-   function evalAnswer(varNames,template){
-     var varString = '(function blank(){';
-     varNames.forEach(function(e){
-
-
-       if (typeof(Template.instance()[e].get())=='object') {
-       varString += ("var "+e + "=["+String(template[e].get())+"];");
-
-       }
-       else if(typeof(template[e].get())=='string'){
-
-      varString += ("var "+e + "= '"+String(template[e].get())+"';");
-
-       }
-       else{
-     varString += ("var "+e + "="+String(template[e].get())+";");
-
-       }
-
-
-
-     });
-     varString+="return eval(answerText)})()"
-
-   //console.log(varString);
-   answer = eval(varString);
-  //console.log(answer);
-   return answer;
-
-
- }
-
-var answer = evalAnswer(varNames,Template.instance());
-
-
-   //varString+=answerText;
-
-   varNames.push('answer');
-    //console.log(varString);
-
-*/
-  Template.instance()['answer']= new ReactiveVar();
-   Template.instance()['answer'].set(answerText);
-
-
-
-   Template.instance()['varNames'] = new ReactiveVar();
-   Template.instance()['varNames'].set(varNames);
-
-//console.log(varString);
-
-//}
-});
-
-var question = this.find('.question');
-if(question!=[]){
-var questionHTML = $(question).html();
-
-var re = new RegExp("@answer\\b","g")
-
-questionHTML = questionHTML.replace(re,Template.instance()['answer'].get());
-
-varNames.forEach(function(e){
-
-var re = new RegExp("@"+e+'\\b',"g")
-
-questionHTML = questionHTML.replace(re,Template.instance()[e].get());
-
-//console.log(questionHTML);
-
-})
-//console.log(questionHTML);
-$(question).html(questionHTML);
-
-      eqns = Template.instance().findAll('eq');
-
-      eqns.forEach(function(e){
-
-      katex.render(e.innerText,e);
-
-    })
-
-//console.log(Template.instance());
-}
-/*
-
-ans = Template.instance().findAll('ans');
-ans.forEach(function(e){
-
-katex.render(e.innerText,e);
-
-})
-*/
-
-});
 
 Template.questionView.helpers({
 
@@ -213,6 +174,8 @@ Session.get('reloadingQuestion');
 }
 
 })
+
+
 
 Template.questionView.events({
 
@@ -332,11 +295,7 @@ $('.question').removeClass('quizQuestionSelected');
 })
 
 
-Template.questionVars.onRendered(function(){
 
-this.$(".vars").hide();
-
-});
 
 
 Template.questionsViewAll.helpers({
@@ -449,11 +408,15 @@ Session.set('currentCourseUnitStandard',courseUnitStandardObject);
 
 Template.courseUnitStandard.rendered = function(){
 var questionStandardData = Session.get('currentCourseUnitStandard');
-//console.log(questionStandardData);
-if(questionStandardData.course!=null){
+
+if(questionStandardData){
 $('#courseSelectCourse').val(questionStandardData.course);
 $('#courseSelectUnit').val(questionStandardData.unit);
 $('#courseSelectStandard').val(questionStandardData.standard);
+}
+else{
+Session.set('currentCourseUnitStandard',undefined);
+
 }
 
 }
@@ -583,6 +546,225 @@ Template.quizzesViewMine.helpers({
 
 
 })
+
+function renderQuestion(){
+
+      //Session.set('reloadingQuestion',true);
+      var vars = Template.instance().findAll('var');
+       var codeError = false;
+      var varNames = []
+
+      vars.forEach(function(e){
+      //if($(e).attr('id')!='answer'){
+      Template.instance()[$(e).attr('id')]=new ReactiveVar();
+      var varText = $(e).html().replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+
+      varNames.forEach(function(e){
+
+      var re = new RegExp("@"+e+'\\b',"g")
+      var insertArray = (typeof(Template.instance()[e].get())=='object')?("["+ Template.instance()[e].get()+"]") : Template.instance()[e].get();
+      varText = varText.replace(re,insertArray);
+
+      });
+      //console.log(varText+" var");
+
+      if($(e).attr('id')!='answer'){
+
+/*
+      try{
+
+      esprima.parse(varText);
+
+
+      }
+      catch(r){
+
+      codeError=true;
+      console.log(r)
+
+
+      }
+*/
+
+      if(!codeError){
+
+      Template.instance()[$(e).attr('id')].set(eval(varText));
+
+      }
+      Session.set('codeError',codeError);
+
+
+      varNames.push($(e).attr('id'))
+}
+else{
+       var answerText = $(vars[vars.length - 1]).html();
+
+
+      Template.instance()['answer']= new ReactiveVar();
+       Template.instance()['answer'].set(answerText);
+
+       //console.log(answerText);
+}
+       Template.instance()['varNames'] = new ReactiveVar();
+       Template.instance()['varNames'].set(varNames);
+
+      //console.log(varString);
+
+      //}
+      });
+
+      //console.log(Template.instance());
+      var question = Template.instance().find('.question');
+
+      if(question!=[]){
+      var questionHTML = $(question).html();
+
+      var re = new RegExp("@answer\\b","g")
+
+      questionHTML = questionHTML.replace(re,Template.instance()['answer'].get());
+
+      varNames.forEach(function(e){
+
+      var re = new RegExp("@"+e+'\\b',"g")
+
+      questionHTML = questionHTML.replace(re,Template.instance()[e].get());
+
+
+
+      })
+      $(question).html(questionHTML);
+      //console.log(questionHTML);
+
+    };
+
+}
+
+
+
+function rendQ(template){
+
+
+      var vars = template.findAll('var');
+
+       var codeError = false;
+      var varNames = []
+
+      vars.forEach(function(e){
+      //if($(e).attr('id')!='answer'){
+
+      template[$(e).attr('id')]=new ReactiveVar();
+      var varText = $(e).html().replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+
+      varNames.forEach(function(e){
+
+      var re = new RegExp("@"+e+'\\b',"g")
+      var insertArray = (typeof(template[e].get())=='object')?("["+ template[e].get()+"]") : template[e].get();
+      varText = varText.replace(re,insertArray);
+
+  });
+
+      //console.log(varText+" var");
+
+      if($(e).attr('id')!='answer'){
+
+
+
+
+      template[$(e).attr('id')].set(eval(varText));
+
+
+
+      varNames.push($(e).attr('id'))
+}
+
+
+else{
+       var answerText = $(vars[vars.length - 1]).html();
+
+
+      template['answer']= new ReactiveVar();
+       template['answer'].set(answerText);
+
+       console.log(answerText);
+}
+
+
+
+});
+       template['varNames'] = new ReactiveVar();
+       template['varNames'].set(varNames);
+
+
+//console.log(template);
+
+      var preview = Session.get('questionPreview');
+      if(preview){
+      var question = Session.get('questionPreview').text;
+
+
+      var questionHTML = question;
+      var answerHTML="@answer";
+      var re = new RegExp("@answer\\b","g")
+
+      answerHTML = answerHTML.replace(re,template['answer'].get());
+      console.log(answerHTML);
+      varNames.forEach(function(e){
+
+      var re = new RegExp("@"+e+'\\b',"g")
+
+      questionHTML = questionHTML.replace(re,template[e].get());
+      answerHTML = answerHTML.replace(re,template[e].get());
+
+
+      })
+
+      var previewObject = {
+        text:questionHTML,
+        answer:answerHTML
+      }
+      //console.log(template)
+      Session.set('previewObject',previewObject);
+
+
+    };
+
+return template;
+
+}
+function renderEquations(template){
+
+
+vars = template.findAll('eq')
+
+      vars.forEach(function(e){
+
+      katex.render(e.innerText ,e);
+
+
+    })
+
+}
+
+function addVariables(t,text){
+  var questionHTML = text;
+
+  var re = new RegExp("@answer\\b","g")
+
+  questionHTML = questionHTML.replace(re,t.instance()['answer'].get());
+
+  varNames.forEach(function(e){
+
+  var re = new RegExp("@"+e+'\\b',"g")
+
+  questionHTML = questionHTML.replace(re,t.instance()[e].get());
+
+return questionHTML;
+
+})
+
+}
+
+
 Template.desmosView.rendered = function(){
 
 elt = this.$('.desmos-container')[0];
