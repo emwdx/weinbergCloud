@@ -76,7 +76,7 @@
 <div class = "row">
 
 <div class="control-group col-md-4">
-<label class = "control-label"> Current Grade:</label>
+<label class = "control-label"> PowerSchool Grade on this Standard:</label>
 
 <div class = "controls">
 <select name = "grade" class = "reassessSelect form-control">
@@ -97,9 +97,10 @@
 <select name = "time" class = "reassessSelect form-control">
 <option value ="0" selected ="selected" ></option>
 <option value="Before School" >Before School</option>
-<option value="Lunch Activity" >Lunch Activity Period</option>
+<option value="Lunch Activity" >During Lunch</option>
 <option value="In-Class Quiz" >In-Class Quiz</option>
 <option value="After School">After School</option>
+<option value="Block D or G">Block D or G</option>
 
 
 </select>
@@ -239,7 +240,7 @@
 <div class = "row">
 
 <div class="control-group col-md-4">
-<label class = "control-label"> Current Grade:</label>
+<label class = "control-label"> Current Grade on this Standard:</label>
 
 <div class = "controls">
 <select name = "grade" class = "reassessSelect form-control">
@@ -260,9 +261,10 @@
 <select name = "time" class = "reassessSelect form-control">
 <option value ="0"  ></option>
 <option value="Before School" {{selectedIf time "Before School"}}>Before School</option>
-<option value="Lunch Activity" {{selectedIf time "Lunch Activity"}}>Lunch Activity Period</option>
+<option value="During Lunch" {{selectedIf time "During Lunch"}}>During Lunch</option>
 <option value="In-Class Quiz" {{selectedIf time "In-Class Quiz"}}>In-Class Quiz</option>
 <option value="After School" {{selectedIf time "After School"}}>After School</option>
+<option value="Block D or G" {{selectedIf time "Block D or G"}}>Block D or G</option>
 
 
 </select>

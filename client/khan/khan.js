@@ -1,175 +1,395 @@
-
-
 Template.questionAdd.events({
 'click #submitQuestion':function(e,t){
 
 e.preventDefault();
 
+var currentQuestionObject={
+answer: t.$('#questionAnswer').val(),
+text: t.$('#questionText').val(),
+};
+
+//var variables = Session.get('mqQuestionVars');
+
+var variables = Variables.find().fetch();
+var testingVars = variables;
+
+testingVars = processVariables(testingVars);
+if(!(testingVars=='code-error')){
+
 var questionObject={
-vars: document.getElementById('questionVars').value,
-text: document.getElementById('questionText').value,
-course:t.$('#courseSelectCourse').val(),
-unit:parseInt(t.$('#courseSelectUnit').val()),
-standard:parseInt(t.$('#courseSelectStandard').val())
+vars: variables,
+text: currentQuestionObject.text,
+answer: currentQuestionObject.answer,
+public: $('#shareQuestion').is(":checked"),
+title: $('#addQuestionTitle').val()
 };
 console.log(questionObject);
-var currentQuestionID = Session.get('currentQuestion');
-var retrievedQ = Questions.findOne({_id:currentQuestionID});
-if(retrievedQ){
 
+var currentQuestionID = Session.get('currentQuestion');
+var questionMode = Session.get('questionMode');
+
+var retrievedQ = Questions.findOne({_id:currentQuestionID});
+
+if(questionMode=='Edit'){
+questionObject['lastEdited']=new Date();
 Questions.update({_id:currentQuestionID},{$set:questionObject},function(error,result){
 
-if(result){Router.go('/khan/');}
+if(result){
+alert("Successfully edited question!");
+Router.go('/list-my-questions/');
+Session.set('questionPreview',null);
+}
 
 });
 
 }
-else{
+else if(questionMode=='Create New'){
+  questionObject['created']=new Date();
+  questionObject['user']=Meteor.user().username;
 Questions.insert(questionObject,function(error,result){
 
-if(result){alert("Success!")};
+if(result){
+  alert("Successfully added question!");
+Router.go('/list-my-questions/');
+Session.set('questionPreview',null);
+
+};
 
 });
 
 }
+
+else if(questionMode =='Copy'){
+  questionObject['created']=new Date();
+  questionObject['user']=Meteor.user().username;
+  Questions.insert(questionObject,function(error,result){
+
+  if(result){
+    alert("Successfully copied Question!");
+  Router.go('/list-my-questions/');
+  Session.set('questionPreview',null);
+
+  };
+
+  });
+
+
+}
+}
+else{alert("Please check your calculated values or custom code for errors.")}
 
 },
 
 
-'change #questionVars, change #questionText':function(e,t){
-e.preventDefault();
+'keypress #questionAnswer, keypress #questionText':function(e,t){
 
 
   var questionObject={
-  vars: t.$('#questionVars').val(),
+  answer: t.$('#questionAnswer').val(),
   text: t.$('#questionText').val(),
   };
 
-  if(questionObject.vars!=''&&questionObject.text!=''){
+  if(questionObject.answer!=''&&questionObject.text!=''){
 Session.set('questionPreview',questionObject);
 
   }
   else{
 
- Session.set('questionPreview',{vars:"",text:""});
+ Session.set('questionPreview',{answer:"",text:""});
 
   }
 
+renderEquations(t);
+
+},
+
+'click #addVar':function(e){
+e.preventDefault();
+var vars = Variables.find().fetch();//Session.get('mqQuestionVars');
+var names = _.pluck(vars,'name');
+if(_.contains(names,("var"+vars.length))){
+  var newName = "var"+(vars.length+1);
+}
+else{
+
+  var newName = "var"+vars.length;
+}
+var newIndex = vars.length+1;
+//vars.push({name:newName,value:null,type:'rand-int',index:newIndex,options:{min: -10, max: 10, exclude: ""}});
+//Session.set('mqQuestionVars',vars);
+Variables.insert({name:newName,value:null,type:'rand-int',index:newIndex,options:{min: -10, max: 10, exclude: ""}})
+
+},
+
+'click #processVariables':function(e,t){
+e.preventDefault();
+
+//vars = Session.get('mqQuestionVars');
+vars = Variables.find().fetch()
+
+var testingVars = vars;
+
+testingVars = processVariables(testingVars);
+if(!(testingVars=='code-error')){
+
+
+vars = processVariables(vars);
+
+vars.forEach(function(v){
+
+Variables.update({_id:v._id},{$set:{value:v.value}})
+
+})
+//Session.set('mqQuestionVars',vars);
+
+var mqQuestionText = t.$('#questionText').val();
+var mqQuestionAns = t.$('#questionAnswer').val();
+
+vars.forEach(function(el){
+  var re = new RegExp("@"+el.name+'\\b',"g")
+  var varVal = el.value;
+  mqQuestionText = mqQuestionText.replace(re,varVal);
+  mqQuestionAns = mqQuestionAns.replace(re,varVal);
+
+})
+
+Session.set('questionPreview',{answer:mqQuestionAns,text:mqQuestionText});
+renderEquations(t);
+
+}
+else{alert('Check your code for errors')}
+}
+
+
+
+});
+
+Template.questionAdd.onRendered(function(){
+
+
+var mqQuestionText = Template.instance().$('#questionText').val();
+var mqQuestionAns = Template.instance().$('#questionAnswer').val();
+
+Session.set('questionPreview',{text:mqQuestionText,answer:mqQuestionAns});
+
+
+
+
+
+this.$( "#varList" ).sortable({
+
+  update: function(e, ui) {
+    var el = ui.item.get(0)
+    var before = ui.item.prev().get(0)
+    var after = ui.item.next().get(0)
+    newVars = [];
+    currVars = Variables.find().fetch();
+
+
+           if(!before) {
+
+             newVars.push(Blaze.getData(el));
+
+             currVars.forEach(function(d){
+
+               newVars.push(d)});
+
+             newVars.splice(Blaze.getData(el).index,1);
+
+           } else if(!after) {
+
+
+             currVars.forEach(function(d){
+
+               newVars.push(d);
+
+             });
+
+             newVars.push(Blaze.getData(el));
+             //newVars[newVars.length-1].index=0;
+             console.log(newVars);
+             newVars.splice(Blaze.getData(el).index-1,1);
+
+
+           }
+           else{
+
+            var topVars = currVars.slice(0,Blaze.getData(el).index-1);
+            var botVars = currVars.slice(Blaze.getData(el).index-1,currVars.length)
+            topVars.forEach(function(d){newVars.push(d)})
+            newVars.push(Blaze.getData(el));
+            botVars.forEach(function(d){newVars.push(d)})
+
+           }
+          //Variables.find().fetch().forEach(function(v){Variables.remove(v._id)})
+          var i=0;
+          newVars.forEach(function(d){
+            d.index=i+1;
+            Variables.update({_id:d._id},{$set:{d}});
+            i++
+          })
 
 
 
 }
-
-
-});
-
-
-
-Template.questionView.onRendered(function(){
-var template = this;
-  renderQuestion();
-  renderEquations(template);
-
-});
-
-Template.questionPreview.onRendered(function(){
-  var template = this;
-  Session.set('previewObject',{previewText:"",previewAnswer:"",previewVars:""});
-  Session.set('questionPreview',undefined)
-
-
-template.autorun(function(){
-  //console.log('rendered');
-  var previewExists = Session.get('previewObject');
-  renderEquations(template);
 });
 
 
 });
 
+Template.questionAdd.onCreated(function(){
 
+this.subscribe('questions',{_id:Session.get('selectedQuestion')});
+if(Variables.find().count()==0){Variables.insert({name:"var1",value:null,type:'rand-int',index:1,options:{min: -10, max: 10, exclude: ""}});}
 
-Template.questionPreview.events({
-  'click #questionPreview':function(e,t){
-  e.preventDefault();
-
-    var questionObject={
-    vars: $('#questionVars').val(),
-    text: $('#questionText').val(),
-    };
-
-    if(questionObject.vars!=''&&questionObject.text!=''){
-  Session.set('questionPreview',questionObject);
-
-    }
-    else{
-
-   Session.set('questionPreview',{text:"",vars:""});
-
-    }
-Session.set('previewObject',{previewText:"",previewAnswer:"",previewVars:""});
-  rendQ(Template.instance());
-  //renderEquations(Template.instance());
-  //console.log(Session.get('questionPreview'));
-  //console.log(questionObject);
-
-  //Blaze.renderWithData(Template.questionPreview, Template.currentData(),document.querySelector(("#"+a)));
-
-
-  },
 })
 
-Template.questionPreview.helpers({
+Template.questionAdd.onDestroyed(function(){
 
-previewText:function(){
+Variables.find().fetch().forEach(function(v){Variables.remove(v._id)});
+Variables.insert({name:"var1",value:null,type:'rand-int',index:1,options:{min: -10, max: 10, exclude: ""}});
 
+})
 
-var result = Session.get('previewObject');
-if(result){return result.text}
-//console.log('not found');
-return "";
+Template.questionAdd.helpers({
+
+vars: function(){
+
+return Variables.find({},{sort:{index:1}});
+//return Session.get('mqQuestionVars');
+
+},
+
+previewText: function(){
+
+var previewText = Session.get('questionPreview');
+if(previewText){return previewText.text}
+
+else{return ""}
+
 
 },
 previewAnswer: function(){
-  var result = Session.get('previewObject')
-  if(result){return result.answer}
-//console.log('not found');
-  return "";
+  var previewAnswer = Session.get('questionPreview');
+  if(previewAnswer){return previewAnswer.answer}
 
-
-},
-previewVars: function(){
-var result = Session.get('questionPreview')
-if(result){return result.vars}
-console.log('not found');
-return "";
-
-},
-reloading:function(){
-
-return Session.get('reloadingQuestion');
+else{  return ""}
 
 },
 
-noCodeError:function(){
+questionMode:function(){
 
-return Session.equals('codeError',false);
+return Session.get('questionMode');
+
+},
+currentTitle:function(){
+
+var currQuestion =  Questions.findOne({_id:Session.get('currentQuestion')});
+if(currQuestion){return currQuestion.title}
+else{return null}
+
+
+},
+
+isPublic:function(){
+
+var currQuestionIndex =  Session.get('currentQuestion');
+var currQuestion =  Questions.findOne({_id:currQuestionIndex});
+
+if(currQuestion){
+
+if(currQuestion.public===true){return 'checked' }
+
+else{return ''}
+
 }
-
-
+else{return 'checked'}
+}
 })
+
+
+
+Template.questionView.events({
+
+
+    'click .addToQuiz':function(e,t){
+
+  var questionText = t.$('.questionText').html();
+
+  var answer = t.$('.questionAnswer').html();
+  var newQuestion = {text:questionText,answer:answer,
+  course:t.data.course,unit:t.data.unit,standard:t.data.standard,qid:t.data._id};
+  //console.log(newQuestion);
+
+  var curQuiz = Session.get('currentQuiz');
+  curQuiz.push(newQuestion);
+  Session.set('currentQuiz',curQuiz);
+  t.$('.question').addClass('quizQuestionSelected');
+
+  }
+
+});
+Template.questionView.onCreated(function(){
+var template = Template.instance();
+
+template.vars = new ReactiveVar(Template.instance().data.vars);
+template.text = new ReactiveVar(Template.instance().data.text);
+template.answer = new ReactiveVar(Template.instance().data.answer);
+template.questionText = new ReactiveVar("");
+template.questionAnswer = new ReactiveVar("");
+//template.username = new ReactiveVar(Meteor.call('usernameFromID',Meteor.user()._id));
+//console.log(template.vars.get());
+
+
+
+  template.vars.set(processVariables(template.vars.get()));
+  //console.log(template.vars.get());
+  var mqQuestionText = template.text.get();
+  var mqQuestionAns = template.answer.get();
+
+
+  var vars = template.vars.get();
+
+  vars.forEach(function(el){
+    var re = new RegExp("@"+el.name+'\\b',"g")
+    var varVal = el.value;
+    mqQuestionText = mqQuestionText.replace(re,varVal);
+    mqQuestionAns = mqQuestionAns.replace(re,varVal);
+    //console.log(mqQuestionText);
+  })
+
+  template.questionText.set(mqQuestionText);
+  template.questionAnswer.set(mqQuestionAns);
+
+renderEquationsQV(template);
+Template.instance().subscribe('users',{_id:Template.currentData().user});
+
+});
 
 Template.questionView.helpers({
 
-answerValue:function(t){
+questionText:function(t){
 
-return Template.instance().answer.get();
+return Template.instance().questionText.get();
 
 
 },
-reloading:function(){
+questionAnswer:function(){
 
-Session.get('reloadingQuestion');
+return Template.instance().questionAnswer.get();
+
+},
+showHeader:function(){
+
+return Session.get('questionViewShowHeader');
+
+},
+adminRights:function(){
+
+var rights = (this.user==Meteor.user().username)|(Roles.userIsInRole(Meteor.user()._id,['admin-member','admin']));
+
+if(rights){return rights}
+return null;
 
 }
 
@@ -180,33 +400,53 @@ Session.get('reloadingQuestion');
 Template.questionView.events({
 
   'click .reloadQuestion':function(e,t){
-    var a = $(e.target).closest('.qC').attr("id");
+    e.preventDefault();
+    template = t;
+      template.vars.set(processVariables(template.vars.get()));
+      //console.log(template.vars.get());
+      var mqQuestionText = template.text.get();
+      var mqQuestionAns = template.answer.get();
 
-Blaze.remove(Template.instance().view);
 
-Blaze.renderWithData(Template.questionView, Template.currentData(),document.querySelector(("#"+a)));
+      var vars = template.vars.get();
+
+      vars.forEach(function(el){
+        var re = new RegExp("@"+el.name+'\\b',"g")
+        var varVal = el.value;
+        mqQuestionText = mqQuestionText.replace(re,varVal);
+        mqQuestionAns = mqQuestionAns.replace(re,varVal);
+        //console.log(mqQuestionText);
+      })
+
+      template.questionText.set(mqQuestionText);
+      template.questionAnswer.set(mqQuestionAns);
+
+    renderEquationsQV(template);
 
 
-  },
-  'click .addToQuiz':function(e,t){
 
-var questionText = t.$('.questionText').html();
-
-var answer = t.$('#answerText').html();
-var newQuestion = {text:questionText,answer:answer,
-course:t.data.course,unit:t.data.unit,standard:t.data.standard,qid:t.data._id};
-console.log(newQuestion);
-
-var curQuiz = Session.get('currentQuiz');
-curQuiz.push(newQuestion);
-Session.set('currentQuiz',curQuiz);
-t.$('.question').addClass('quizQuestionSelected');
-
-}
+  }
 
 })
 
-Template.questionsViewAll.events({
+
+Template.listQuestions.onCreated(function(){
+
+  this.subscribe('questions');
+
+
+});
+
+Template.listQuestions.onRendered(function(){
+
+Session.set('mqQuestionVars',null);
+Session.set('questionViewShowHeader',true);
+
+})
+
+
+
+Template.listQuestions.events({
 
 'click .questionDelete':function(e){
 e.preventDefault();
@@ -222,6 +462,31 @@ Questions.remove({_id:this._id});
 },
 'click .questionEdit':function(e){
 e.preventDefault();
+
+
+Session.set('questionMode','Edit')
+
+
+
+Session.set('mqQuestionVars',this.vars);
+Session.set('currentQuestion',this._id);
+
+
+
+
+Variables.find().fetch().forEach(function(v){Variables.remove(v._id)})
+this.vars.forEach(function(d){
+
+  Variables.insert(d);
+
+});
+
+Router.go('/questions/edit/'+this._id+"/");
+
+
+},
+'click .questionCopy':function(e){
+e.preventDefault();
 var courseUnitStandardObject = {
 course:this.course,
 unit:this.unit,
@@ -229,83 +494,31 @@ standard:this.standard,
 
 }
 
+Session.set('questionMode','Copy')
+
 Session.set('currentCourseUnitStandard',courseUnitStandardObject);
+
+Session.set('mqQuestionVars',this.vars);
 Session.set('currentQuestion',this._id);
 Router.go('/questions/edit/'+this._id+"/");
 
 
-},
-'click #assignQuiz':function(e){
-e.preventDefault();
-var names = $('#classRosterNames').val();
-var questions = Session.get('currentQuiz');
-standards = []
-questions.forEach(function(q){
-var curStd = q.unit+"."+q.standard;
-if(!_.contains(standards,curStd)){
-standards.push(curStd);
 }
 })
 
-courses = []
-questions.forEach(function(q){
-var curStd = q.course;
-if(!_.contains(courses,curStd)){
-courses.push(curStd);
-}
 
-});
-
-//console.log(names);
-names.forEach(function(e){
-var newQuiz = {
-questions:questions,
-user:e,
-active:false,
-completed:false,
-created:new Date(),
-standards:standards,
-courses:courses,
-schoolYear:"15-16",
-showAnswers:false
-}
-Quizzes.insert(newQuiz,function(error,result){
-
-
- if(result){
-
-var quizzes = Session.get('quizzesAssigned');
-quizzes.push(e);
-Session.set('quizzesAssigned',quizzes);
- }
- else{console.log(error)}
- });
-});
-
-},
-'click #resetQuiz':function(e){
-
-Session.set('currentQuiz',[]);
-Session.set('quizzesAssigned',[]);
-$('.question').removeClass('quizQuestionSelected');
-
-}
-
+Template.listQuestions.events({
 
 })
 
-
-
-
-
-Template.questionsViewAll.helpers({
+Template.listQuestions.helpers({
 
 question:function(){
 
   var searchObject = {};
   var questionStandardData = Session.get('currentCourseUnitStandard');
 
-
+  if(questionStandardData){
 
   if(questionStandardData.course!=""){
     searchObject['course']=questionStandardData.course;
@@ -318,14 +531,14 @@ question:function(){
   if(questionStandardData.standard!=''){
     searchObject['standard']=parseInt(questionStandardData.standard);
   }
-
-
-
 return Questions.find(searchObject);
+}
 
+return null;
 },
-quizzesAssigned:function(){
-  return Session.get('quizzesAssigned');
+allReady:function(){
+return Template.instance().subscriptionsReady();
+
 }
 
 });
@@ -420,13 +633,33 @@ Session.set('currentCourseUnitStandard',undefined);
 }
 
 }
-Template.questionsViewAll.rendered = function(){
 
-Session.set('currentCourseUnitStandard',{course:"",standard:"",unit:""});
-Session.set('currentQuiz',[]);
-Session.set('quizzesAssigned',[]);
 
-}
+Template.listQuestions.onRendered(function(){
+  var template = this;
+
+        Session.set('currentCourseUnitStandard',{course:"",standard:"",unit:""});
+        Session.set('mqQuestionVars',null);
+        Session.set('questionViewShowHeader',true);
+
+        Session.set('currentQuiz',[]);
+        Session.set('quizzesAssigned',[]);
+
+
+})
+
+
+
+Template.questionAdd.onCreated(function(){
+
+this.subscribe('questions',{_id:Session.get('selectedQuestion')});
+
+})
+
+Template.listQuestions.onCreated(function(){
+
+
+});
 
 Template.classRoster.helpers({
 
@@ -442,328 +675,8 @@ return Meteor.users.find(searchObject);
 
 });
 
-Template.quizzesViewAll.helpers({
-incompleteQuizzes:function(){
-
-
-return Quizzes.find({completed:false},{$sort:{created:1}});
-
-},
-completeQuizzes:function(){
-
-return Quizzes.find({completed:true},{$sort:{created:1}});
-
-},
-
-active:function(){
-
-if(this.active==true){return 'checked'}
-else{return ''}
-
-}
-
-
-
-})
-
-Template.quizzesViewAll.events({
-  'change .quizVisible':function(e){
-  var bool = $(e.target).is(":checked");
-  Quizzes.update({_id:this._id},{$set:{active:bool}});
-},
-'click .quizCompleted':function(e){
-e.preventDefault();
-Quizzes.update({_id:this._id},{$set:{completed:true,showAnswers:true}});
-
-},
-'click .quizNotCompleted':function(e){
-e.preventDefault();
-Quizzes.update({_id:this._id},{$set:{completed:false,showAnswers:false}});
-
-},
-'click .quizDelete':function(e){
-e.preventDefault();
-var bool = confirm('Are you sure you want to delete this quiz?');
-if(bool){
-Quizzes.remove({_id:this._id});
-
-}
-
-}
-
-})
-
-Template.quizQuestionView.helpers({
-answerVisible:function(){
-var quizSettings = Template.parentData();
-return (quizSettings.showAnswers|Roles.userIsInRole(Meteor.user(),['teacher','admin']))
-
-}
-
-})
 
 /*
-Template.quizQuestionView.rendered = function(){
-  eqns = Template.instance().findAll('ans');
-console.log(eqns);
-  eqns.forEach(function(e){
-
-  katex.render(e.innerText,e);
-
-});
-
-}
-*/
-
-Template.quizView.helpers({
-
-quizVisible:function(){
-  return (this.active|Roles.userIsInRole(Meteor.user(),['teacher','admin']))
-
-
-},
-adminView:function(){
-
-  return (!this.active&Roles.userIsInRole(Meteor.user(),['teacher','admin']));
-}
-
-
-})
-
-Template.quizzesViewMine.helpers({
-  incompleteQuizzes:function(){
-
-
-  return Quizzes.find({completed:false,active:true},{$sort:{created:1}});
-
-  },
-  completeQuizzes:function(){
-
-  return Quizzes.find({completed:true},{$sort:{created:1}});
-
-  },
-
-
-
-})
-
-function renderQuestion(){
-
-      //Session.set('reloadingQuestion',true);
-      var vars = Template.instance().findAll('var');
-       var codeError = false;
-      var varNames = []
-
-      vars.forEach(function(e){
-      //if($(e).attr('id')!='answer'){
-      Template.instance()[$(e).attr('id')]=new ReactiveVar();
-      var varText = $(e).html().replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-
-      varNames.forEach(function(e){
-
-      var re = new RegExp("@"+e+'\\b',"g")
-      var insertArray = (typeof(Template.instance()[e].get())=='object')?("["+ Template.instance()[e].get()+"]") : Template.instance()[e].get();
-      varText = varText.replace(re,insertArray);
-
-      });
-      //console.log(varText+" var");
-
-      if($(e).attr('id')!='answer'){
-
-/*
-      try{
-
-      esprima.parse(varText);
-
-
-      }
-      catch(r){
-
-      codeError=true;
-      console.log(r)
-
-
-      }
-*/
-
-      if(!codeError){
-
-      Template.instance()[$(e).attr('id')].set(eval(varText));
-
-      }
-      Session.set('codeError',codeError);
-
-
-      varNames.push($(e).attr('id'))
-}
-else{
-       var answerText = $(vars[vars.length - 1]).html();
-
-
-      Template.instance()['answer']= new ReactiveVar();
-       Template.instance()['answer'].set(answerText);
-
-       //console.log(answerText);
-}
-       Template.instance()['varNames'] = new ReactiveVar();
-       Template.instance()['varNames'].set(varNames);
-
-      //console.log(varString);
-
-      //}
-      });
-
-      //console.log(Template.instance());
-      var question = Template.instance().find('.question');
-
-      if(question!=[]){
-      var questionHTML = $(question).html();
-
-      var re = new RegExp("@answer\\b","g")
-
-      questionHTML = questionHTML.replace(re,Template.instance()['answer'].get());
-
-      varNames.forEach(function(e){
-
-      var re = new RegExp("@"+e+'\\b',"g")
-
-      questionHTML = questionHTML.replace(re,Template.instance()[e].get());
-
-
-
-      })
-      $(question).html(questionHTML);
-      //console.log(questionHTML);
-
-    };
-
-}
-
-
-
-function rendQ(template){
-
-
-      var vars = template.findAll('var');
-
-       var codeError = false;
-      var varNames = []
-
-      vars.forEach(function(e){
-      //if($(e).attr('id')!='answer'){
-
-      template[$(e).attr('id')]=new ReactiveVar();
-      var varText = $(e).html().replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-
-      varNames.forEach(function(e){
-
-      var re = new RegExp("@"+e+'\\b',"g")
-      var insertArray = (typeof(template[e].get())=='object')?("["+ template[e].get()+"]") : template[e].get();
-      varText = varText.replace(re,insertArray);
-
-  });
-
-      //console.log(varText+" var");
-
-      if($(e).attr('id')!='answer'){
-
-
-
-
-      template[$(e).attr('id')].set(eval(varText));
-
-
-
-      varNames.push($(e).attr('id'))
-}
-
-
-else{
-       var answerText = $(vars[vars.length - 1]).html();
-
-
-      template['answer']= new ReactiveVar();
-       template['answer'].set(answerText);
-
-       console.log(answerText);
-}
-
-
-
-});
-       template['varNames'] = new ReactiveVar();
-       template['varNames'].set(varNames);
-
-
-//console.log(template);
-
-      var preview = Session.get('questionPreview');
-      if(preview){
-      var question = Session.get('questionPreview').text;
-
-
-      var questionHTML = question;
-      var answerHTML="@answer";
-      var re = new RegExp("@answer\\b","g")
-
-      answerHTML = answerHTML.replace(re,template['answer'].get());
-      console.log(answerHTML);
-      varNames.forEach(function(e){
-
-      var re = new RegExp("@"+e+'\\b',"g")
-
-      questionHTML = questionHTML.replace(re,template[e].get());
-      answerHTML = answerHTML.replace(re,template[e].get());
-
-
-      })
-
-      var previewObject = {
-        text:questionHTML,
-        answer:answerHTML
-      }
-      //console.log(template)
-      Session.set('previewObject',previewObject);
-
-
-    };
-
-return template;
-
-}
-function renderEquations(template){
-
-
-vars = template.findAll('eq')
-
-      vars.forEach(function(e){
-
-      katex.render(e.innerText ,e);
-
-
-    })
-
-}
-
-function addVariables(t,text){
-  var questionHTML = text;
-
-  var re = new RegExp("@answer\\b","g")
-
-  questionHTML = questionHTML.replace(re,t.instance()['answer'].get());
-
-  varNames.forEach(function(e){
-
-  var re = new RegExp("@"+e+'\\b',"g")
-
-  questionHTML = questionHTML.replace(re,t.instance()[e].get());
-
-return questionHTML;
-
-})
-
-}
-
 
 Template.desmosView.rendered = function(){
 
@@ -789,6 +702,7 @@ this.autorun(function(){
 
 
 }
+*/
 
 Template.desmosView.events({
 'keydown #desmos-input':function(e){
@@ -796,3 +710,384 @@ console.log($(e.target).val());
 Session.set('desmos-exp',$(e.target).val());
 }
 });
+
+
+
+function processVariables(vars){
+  var codeHasErrors = false;
+
+  if(vars.length!=0){
+  vars.forEach(function(el,i){
+
+  if(el.type=='rand-int'){
+
+    var options = el.options;
+    if(!options){
+    el.options = {min: -10, max: 10, exclude: ""}
+
+    }
+    var exclude = el.options.exclude.trim();
+    if(el.options.exclude.trim()!=''){
+     exclude = exclude.split(',');
+      exclude.forEach(function(e,i){
+
+        exclude[i] = parseInt(e);
+
+      })
+
+    }
+    else{
+    exclude = []
+
+    }
+
+  el.value = Kh.randRangeExclude(el.options.min,el.options.max,exclude)
+
+    }
+    else if(el.type=='rand-dec'){
+
+      el.value = (el.options.min + Math.random()*(el.options.max-el.options.min)).toFixed(el.options.DP);
+
+
+    }
+    else if(el.type=='calc-val'){
+
+      var previousVars = vars.slice(0,i)
+      var varText = el.text;
+      previousVars.forEach(function(e){
+
+      var re = new RegExp("@"+e.name+'\\b',"g")
+      var varVal = e.value;
+
+      varText = varText.replace(re,varVal);
+
+
+    });
+
+    try{
+     el.value = eval(varText);
+   }
+   catch(e){
+
+     console.log(e+", "+varText);
+     console.log(el);
+     codeHasErrors = true;
+
+   }
+    }
+    else if(el.type=='customJS'){
+
+      var previousVars = vars.slice(0,i)
+      var varText = el.text;
+      previousVars.forEach(function(e){
+
+      var re = new RegExp("@"+e.name+'\\b',"g")
+      var varVal = e.value;
+
+      varText = varText.replace(re,varVal);
+
+
+    });
+    try{
+     el.value = eval(varText);
+   }
+   catch(e){
+
+     console.log(e+", "+varText+", "+el);
+     codeHasErrors = true;
+   }
+
+    }
+
+
+  })
+
+if(!codeHasErrors){return vars;}
+else{return 'code-error'}
+
+}
+
+}
+function renderEquations(template){
+
+
+var eqnsHTML = $('<div>'+Session.get('questionPreview').text + '</div>')
+var eqnsText = $(eqnsHTML).find('eq');
+
+      $(eqnsText).each(function(n,e){
+
+      katex.render(e.innerText ,e);
+
+
+    })
+
+
+var ansHTML = $('<div>'+Session.get('questionPreview').answer + '</div>');
+var ansText = $(ansHTML).find('eq');
+
+          $(ansText).each(function(n,e){
+
+          katex.render(e.innerText ,e);
+
+
+        })
+
+        Session.set('questionPreview',{text:$(eqnsHTML).html(),answer:$(ansHTML).html()});
+
+
+}
+
+function renderEquationsQV(template){
+
+
+var eqnsHTML = $('<div>'+template.questionText.get() + '</div>')
+var eqnsText = $(eqnsHTML).find('eq');
+
+      $(eqnsText).each(function(n,e){
+
+      katex.render(e.innerText ,e);
+
+
+    })
+
+
+var ansHTML = $('<div>'+template.questionAnswer.get() + '</div>');
+var ansText = $(ansHTML).find('eq');
+
+          $(ansText).each(function(n,e){
+
+          katex.render(e.innerText ,e);
+
+
+        })
+
+        template.questionText.set($(eqnsHTML).html());
+        template.questionAnswer.set($(ansHTML).html());
+
+
+}
+
+Template.variable.onCreated(function(){
+  var template = this;
+if(!template.data.varType){
+
+template.varType = new ReactiveVar('rand-int');
+
+}
+
+
+
+});
+
+Template.variable.onRendered(function(){
+var template = this;
+template.autorun(function(){
+  Variables.find().fetch();
+  template.$('[data-toggle="tooltip"]').tooltip();
+
+})
+
+
+
+
+})
+
+Template.variable.events({
+
+'change .varTypeSelect':function(e,t){
+
+  Variables.update({_id:this._id},{$set:{type:$(e.target).val(),options:{}}})
+
+},
+
+'click .varDelete':function(e){
+e.preventDefault();
+//var vars = Session.get('mqQuestionVars');
+vars = Variables.find().fetch();
+if(vars.length>1){
+Variables.remove(this._id);
+
+}
+
+
+},
+
+'keyup .varID':function(e,t){
+
+Variables.update({_id:this._id},{$set:{name:$(e.target).val()}})
+
+
+},
+'keyup .varRandInt':function(e,t){
+
+var updatedVar = {};
+updatedVar.options = {};
+updatedVar.value = this.value;
+var thisDiv = $(e.target).parent().parent();
+updatedVar.options.min = parseInt(thisDiv.find('.varRandomIntMin').val())
+updatedVar.options.max = parseInt(thisDiv.find('.varRandomIntMax').val())
+updatedVar.options.exclude = thisDiv.find('.varRandomIntExclude').val()
+Variables.update({_id:this._id},{$set:updatedVar});
+
+},
+'keyup .varRandDec':function(e){
+  var updatedVar = {};
+  updatedVar.options = {};
+  updatedVar.value = this.value;
+  var thisDiv = $(e.target).parent().parent();
+  updatedVar.options.min = parseInt(thisDiv.find('.varRandomDecMin').val());
+  updatedVar.options.max = parseInt(thisDiv.find('.varRandomDecMax').val())
+  updatedVar.options.DP = parseInt(thisDiv.find('.varRandomDecDP').val())
+  Variables.update({_id:this._id},{$set:updatedVar});
+
+
+},
+'keyup .varCalcValText':function(e){
+
+Variables.update({_id:this._id},{$set:{text:$(e.target).val(),options:{}}});
+},
+
+'blur .varCustomJS':function(e){
+
+  Variables.update({_id:this._id},{$set:{text:$(e.target).val(),options:{}}});
+
+}
+
+});
+
+Template.variable.helpers({
+isRandInt: function(){
+return (this.type=='rand-int');
+},
+isRandDec: function(){
+return (this.type=='rand-dec');
+},
+isCalcVal: function(){
+return (this.type=='calc-val');
+},
+isCustomJS: function(){
+return (this.type=='customJS');
+}
+})
+
+
+function findVarIndex(array,indexVal){
+var returnValue=-1;
+array.forEach(function(e,i){
+  //console.log(e.index+","+indexVal+","+i)
+if(e.index===indexVal){
+ returnValue = i;
+
+}
+
+});
+
+return returnValue;
+
+}
+
+function processVariables(vars){
+  var codeHasErrors = false;
+
+  vars.forEach(function(el,i){
+
+  if(el.type=='rand-int'){
+
+    var options = el.options;
+    if(!options){
+    el.options = {min: -10, max: 10, exclude: ""}
+
+    }
+    var exclude = el.options.exclude.trim();
+    var previousVars = vars.slice(0,i)
+
+    previousVars.forEach(function(e){
+
+    var re = new RegExp("@"+e.name+'\\b',"g")
+    var varVal = e.value;
+
+    exclude = exclude.replace(re,varVal);
+
+
+  });
+
+    if(el.options.exclude.trim()!=''){
+     exclude = exclude.split(',');
+      exclude.forEach(function(e,i){
+
+        exclude[i] = parseInt(e);
+
+      })
+
+    }
+    else{
+    exclude = []
+
+    }
+
+  el.value = Kh.randRangeExclude(el.options.min,el.options.max,exclude)
+
+    }
+    else if(el.type=='rand-dec'){
+
+      el.value = (el.options.min + Math.random()*(el.options.max-el.options.min)).toFixed(el.options.DP);
+
+
+    }
+    else if(el.type=='calc-val'){
+
+      var previousVars = vars.slice(0,i)
+      var varText = el.text;
+      previousVars.forEach(function(e){
+
+      var re = new RegExp("@"+e.name+'\\b',"g")
+      var varVal = e.value;
+
+      varText = varText.replace(re,varVal);
+
+
+    });
+
+    try{
+     el.value = eval(varText);
+   }
+   catch(e){
+
+     console.log(e+", "+varText);
+     console.log(el);
+     codeHasErrors = true;
+
+   }
+    }
+    else if(el.type=='customJS'){
+
+      var previousVars = vars.slice(0,i)
+      var varText = el.text;
+      previousVars.forEach(function(e){
+
+      var re = new RegExp("@"+e.name+'\\b',"g")
+      var varVal = e.value;
+
+      varText = varText.replace(re,varVal);
+
+
+    });
+    varText = "(function(){" + varText + "})()";
+    try{
+     el.value = eval(varText);
+   }
+   catch(e){
+
+     console.log(e+", "+varText+", "+el);
+     codeHasErrors = true;
+   }
+
+    }
+
+
+  })
+
+if(!codeHasErrors){return vars;}
+else{return 'code-error'}
+
+}

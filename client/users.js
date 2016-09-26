@@ -8,7 +8,7 @@
       Meteor.subscribe('standard-links');
       Meteor.subscribe('weinbergcash');
       Meteor.subscribe('standard-links');
-      Meteor.subscribe('questions');
+      //Meteor.subscribe('questions');
       Meteor.subscribe('quizzes');
 
   }

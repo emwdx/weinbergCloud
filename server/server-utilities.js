@@ -48,6 +48,8 @@ else{return false}
   });
 
   Meteor.publish('reassessments', function() {
+
+
     if(this.userId){
      var currentUser = Meteor.users.findOne({_id:this.userId});
      if(Roles.userIsInRole(this.userId,'admin')){
@@ -67,11 +69,12 @@ else{return false}
       return null};
 });
 
-Meteor.publish('questions', function() {
+Meteor.publish('questions', function(docs) {
   if(this.userId){
 
+ if(docs){ return Questions.find(docs);}
 
-     return Questions.find();
+else{return Questions.find()}
 
 
    }
@@ -81,11 +84,14 @@ Meteor.publish('questions', function() {
     return null};
 });
 
+
+
  Meteor.publish('standard-links', function() {
 
      return Links.find({});
 
 });
+
 
 
 Meteor.publish("users", function () {

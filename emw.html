@@ -1,8 +1,8 @@
 <head>
   <title>WeinbergCloud</title>
   <meta name="viewport" content="width=device-width, user-scalable=no">
-  <link href='https://fonts.googleapis.com/css?family=Roboto:400,100' rel='stylesheet' type='text/css'>
-  <script src="https://www.desmos.com/api/v0.5/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+
+  <!--script src="https://www.desmos.com/api/v0.5/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script-->
 </head>
 
 
@@ -30,7 +30,14 @@
   </div>
   {{> studentOptionsBar}}
     {{>announcements}}
+
+  {{#if appReady}}
   {{> yield}}
+
+  {{else}}
+  {{>loading}}
+
+  {{/if}}
 
 
   {{/if}}
@@ -82,6 +89,7 @@
         {{#if isAdmin}}
         <li id = "usermanagement"><a href = "/admin/">Manage Users</a></li>
         <li id = "desmos"><a href = "/desmos/">Desmos</a></li>
+        <li id = "mathquill"><a href = "/math-quill-demo/">MathQuill</a></li>
         {{/if}}
         {{/if}}
         </ul>
@@ -94,7 +102,10 @@
      <li id = "addStandards"><a href="/standards/add/">Add</a></li>
          {{/if}}
      <li id = "viewStandards"><a href="/standards/view/">View </a></li>
-     <li id = "khanQuestions"><a href="/khan/">Khan</a></li>
+      {{#if isTeacher}}
+     <li id = "questionBuilder"><a href="/questions/edit/add">Create New</a></li>
+     <li id = "listQuestions"><a href="/list-questions/">See All Questions</a></li>
+      {{/if}}
      </ul>
     </li>
     </ul>

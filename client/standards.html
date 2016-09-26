@@ -113,7 +113,11 @@
 </tr>
 {{#each standards}}
 <tr>
-<td><input type = "checkbox" class = "standardActive" {{active}}></td>
+  {{#if isAdmin}}
+<td>
+
+  <input type = "checkbox" class = "standardActive" {{active}}></td>
+{{/if}}
 <td>{{unit}}.{{standard}}
     {{#if isAdmin}}
     <a href = "/standards/edit/{{_id}}">Edit</a>{{/if}}

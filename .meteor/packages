@@ -6,7 +6,6 @@
 standard-app-packages
 accounts-ui
 accounts-password
-force-ssl
 iron:router
 sacha:spin
 logic-solver
@@ -16,7 +15,7 @@ useraccounts:bootstrap
 cfly15:manage-users
 reactive-var
 sashko:katex
-standard-minifiers
 underscore
 jquery
 clubfest:raphael
+standard-minifier-css

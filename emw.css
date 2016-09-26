@@ -243,3 +243,47 @@ height:400px;
 display:none;
 
 }
+
+input{
+
+color:black;
+
+}
+
+.varContainer{
+
+border:solid 2px white;
+border-radius:4px;
+padding:4px;
+margin-left:4px;
+margin-right:4px;
+margin-top:10px;
+margin-bottom:10px;
+
+}
+
+#mqQuestionText{
+width:50%;
+
+
+}
+#mqQuestionAnswer{
+width:50%;
+
+
+}
+
+#questionAddPreviewText{
+
+min-height: 100px;
+border: 1px solid white;
+padding:5px;
+
+}
+#questionAddPreviewAnswer{
+
+min-height: 100px;
+border: 1px solid white;
+padding:5px;
+
+}
