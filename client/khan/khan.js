@@ -8,6 +8,7 @@ answer: t.$('#questionAnswer').val(),
 text: t.$('#questionText').val(),
 };
 
+var currentStandard = Session.get('currentCourseUnitStandard');
 //var variables = Session.get('mqQuestionVars');
 
 var variables = Variables.find().fetch();
@@ -20,8 +21,11 @@ var questionObject={
 vars: variables,
 text: currentQuestionObject.text,
 answer: currentQuestionObject.answer,
-public: $('#shareQuestion').is(":checked"),
-title: $('#addQuestionTitle').val()
+//public: $('#shareQuestion').is(":checked"),
+title: $('#addQuestionTitle').val(),
+course: currentStandard.course,
+unit:currentStandard.unit,
+standard:currentStandard.standard
 };
 console.log(questionObject);
 
@@ -36,7 +40,7 @@ Questions.update({_id:currentQuestionID},{$set:questionObject},function(error,re
 
 if(result){
 alert("Successfully edited question!");
-Router.go('/list-my-questions/');
+Router.go('/list-questions/');
 Session.set('questionPreview',null);
 }
 
@@ -50,7 +54,7 @@ Questions.insert(questionObject,function(error,result){
 
 if(result){
   alert("Successfully added question!");
-Router.go('/list-my-questions/');
+Router.go('/list-questions/');
 Session.set('questionPreview',null);
 
 };
@@ -66,7 +70,7 @@ else if(questionMode =='Copy'){
 
   if(result){
     alert("Successfully copied Question!");
-  Router.go('/list-my-questions/');
+  Router.go('/list-questions/');
   Session.set('questionPreview',null);
 
   };
@@ -432,7 +436,7 @@ Template.questionView.events({
 
 Template.listQuestions.onCreated(function(){
 
-  this.subscribe('questions');
+  //this.subscribe('questions');
 
 
 });
@@ -462,10 +466,16 @@ Questions.remove({_id:this._id});
 },
 'click .questionEdit':function(e){
 e.preventDefault();
+var courseUnitStandardObject = {
+course:this.course,
+unit:this.unit,
+standard:this.standard,
+
+}
 
 
 Session.set('questionMode','Edit')
-
+Session.set('currentCourseUnitStandard',courseUnitStandardObject);
 
 
 Session.set('mqQuestionVars',this.vars);
@@ -516,6 +526,7 @@ Template.listQuestions.helpers({
 question:function(){
 
   var searchObject = {};
+  /*
   var questionStandardData = Session.get('currentCourseUnitStandard');
 
   if(questionStandardData){
@@ -531,10 +542,9 @@ question:function(){
   if(questionStandardData.standard!=''){
     searchObject['standard']=parseInt(questionStandardData.standard);
   }
+  */
 return Questions.find(searchObject);
-}
 
-return null;
 },
 allReady:function(){
 return Template.instance().subscriptionsReady();
@@ -661,19 +671,7 @@ Template.listQuestions.onCreated(function(){
 
 });
 
-Template.classRoster.helpers({
 
-student:function(){
-var currInfo = Session.get('currentCourseUnitStandard');
-searchObject = {};
-if(currInfo.course){
-  searchObject['profile.courses']=currInfo.course;
-}
-
-return Meteor.users.find(searchObject);
-}
-
-});
 
 
 /*

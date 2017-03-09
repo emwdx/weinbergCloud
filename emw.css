@@ -287,3 +287,19 @@ border: 1px solid white;
 padding:5px;
 
 }
+
+.quizAssignmentComplete{
+
+border: 2px solid green;
+}
+
+#questionList{
+height:800px;
+overflow:auto;
+
+}
+#reassessmentStudentList{
+height:800px;
+overflow:auto;
+
+}

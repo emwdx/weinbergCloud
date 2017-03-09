@@ -20,6 +20,78 @@ else{return ''}
 
 })
 
+Template.classRoster.helpers({
+
+student:function(){
+
+if(Session.get('filterByReassessmentStatus')){
+  var currentDay = Session.get('currentDay');
+var todayReassessments = Reassessments.find({day: currentDay,completed:false},{sort:{time: 1,unit:1,standard:1}});
+}
+else{
+var currInfo = Session.get('currentCourseUnitStandard');
+searchObject = {};
+if(currInfo.course){
+  searchObject['profile.courses']=currInfo.course;
+}
+
+return Meteor.users.find(searchObject);
+}
+},
+reassessmentStudent:function(){
+  if(Session.get('filterByReassessmentStatus')){
+    var currentDay = Session.get('currentDay');
+  var todayReassessments = Reassessments.find({day: currentDay,completed:false},{sort:{time: 1,unit:1,standard:1}});
+
+  return todayReassessments
+
+  }
+
+
+
+},
+reassessmentFoundDay:function(){
+  var days = [];
+  var reassessments = Reassessments.find({completed:false});
+  reassessments.forEach(function(e){
+  if(!_.contains(days,e.day)){
+    days.push(e.day);
+
+  }
+
+});
+return days.sort();
+}
+});
+
+Template.classRoster.events({
+
+      'change #selectDate':function(e){
+      Session.set('currentDay',$('#selectDate').val());
+
+    },
+    'change .selectToAddQuiz':function(){
+
+      var currentQuizzes = Session.get('quizAssignedTo');
+
+      if(_.contains(currentQuizzes,this.user)!=true){
+        currentQuizzes.push(this.user);
+      }
+
+      Session.set('quizAssignedTo',currentQuizzes);
+    }
+
+
+
+})
+
+Template.classRoster.rendered=function(){
+
+Session.set('quizAssignedTo',[]);
+
+
+}
+
 Template.assignQuiz.helpers({
 
   quizzesAssigned:function(){
@@ -32,7 +104,8 @@ Template.assignQuiz.events({
   'click #assignQuiz':function(e){
 
   e.preventDefault();
-  var names = $('#classRosterNames').val();
+  var names = Session.get('quizAssignedTo');
+
   var questions = Session.get('currentQuiz');
   standards = []
   questions.forEach(function(q){
@@ -51,24 +124,29 @@ Template.assignQuiz.events({
 
   });
 
-  //console.log(names);
-  names.forEach(function(e){
+
+  names.forEach(function(n){
+
+  var name = Meteor.users.findOne({"emails.0.address":n})._id;
+  //console.log(name);
   var newQuiz = {
   questions:questions,
-  user:e,
+  user:name,
   active:false,
   completed:false,
   created:new Date(),
   standards:standards,
   courses:courses,
   schoolYear:"15-16",
-  showAnswers:false
+  showAnswers:false,
   }
   Quizzes.insert(newQuiz,function(error,result){
    if(result){
-
+   console.log("quiz assigned");
   var quizzes = Session.get('quizzesAssigned');
+  Reassessments.update({_id:e._id},{$set:{quizAssignmentComplete:true,quizAssigned:false}});
   quizzes.push(e);
+
   Session.set('quizzesAssigned',quizzes);
    }
    else{console.log(error)}
@@ -80,9 +158,17 @@ Template.assignQuiz.events({
 
   Session.set('currentQuiz',[]);
   Session.set('quizzesAssigned',[]);
+  Session.set('quizAssignedTo',[]);
   $('.question').removeClass('quizQuestionSelected');
+  $('.selectToAddQuiz').prop('checked', false);
 
-  }
+},
+'change #filterByReassessmentStatus':function(e){
+
+Session.set('filterByReassessmentStatus',$(e.target).is(":checked"))
+
+
+}
 
 
 

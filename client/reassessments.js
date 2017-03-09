@@ -153,7 +153,8 @@ Template.reassessSignUp.helpers({
 				completed: false,
 				user: Meteor.user().emails[0].address,
         credit:currentCredit._id,
-        schoolYear:"15-16"
+        schoolYear:"15-16",
+        quizAssignmentComplete:false
 
 
  }
@@ -329,8 +330,8 @@ Template.reassessEdit.events({
     if(emptyInputs==0){
     updateReassessmentObject = {
     course:$('#reassessEditForm').find('[name=course]').val(),
-	unit: $('#reassessEditForm').find('[name=unit]').val(),
-	standard:$('#reassessEditForm').find('[name=standard]').val(),
+	unit: parseInt($('#reassessEditForm').find('[name=unit]').val()),
+	standard:parseInt($('#reassessEditForm').find('[name=standard]').val()),
 	time: $('#reassessEditForm').find('[name=time]').val(),
 	day: $('#reassessEditForm').find('[name=date]').val(),
     grade:$('#reassessEditForm').find('[name=grade]').val()
@@ -438,6 +439,17 @@ else{
 return user;
 }
 
+},
+assigned:function(){
+var assignedQuiz = this.quizAssigned|false;
+if(this.quizAssignmentComplete===true){
+
+  return "quizAssignmentComplete";
+}
+  if(assignedQuiz==true){
+
+    return "quizQuestionSelected"};
+  {return ""}
 }
 
 })
@@ -446,7 +458,22 @@ return user;
 Template.showNextRetakes.helpers({
         reassessments: function(){
 
-         return Reassessments.find({day: Session.get('currentDay'),completed:false},{sort:{time: 1, course: -1}});
+         return Reassessments.find({day: Session.get('currentDay'),completed:false},{sort:{time: 1, course: -1,quizAssigned:1}});
+
+        },
+        reassessmentsDuringLunchClass: function(){
+
+         return Reassessments.find({day: Session.get('currentDay'),completed:false,time:{$in:["During Lunch","Lunch Activity","In-Class Quiz","Block D or G"]}},{sort:{ unit:1, standard:1}});
+
+        },
+        reassessmentsBeforeSchool: function(){
+
+         return Reassessments.find({day: Session.get('currentDay'),completed:false,time:"Before School"},{sort:{unit:1, standard:1}});
+
+        },
+        reassessmentsAfterSchool: function(){
+
+         return Reassessments.find({day: Session.get('currentDay'),completed:false,time:"After School"},{sort:{unit:1, standard:1}});
 
         },
         daysObject:getFiveDays,
@@ -512,7 +539,19 @@ Template.reassessmentAdminTemplate.events({
     Credits.update({_id:usedCredit},{$set:{used:true}});
 
 
+  },
+
+  'dblclick .reassessmentItem':function(){
+    console.log(this);
+    if(this.quizAssigned){
+      Reassessments.update({_id:this._id},{$set:{quizAssigned:false}},function(error,result){
+       if(result){console.log("logged")};
+       });
+
     }
+    else{Reassessments.update({_id:this._id},{$set:{quizAssigned:true}});}
+
+  }
 });
 
 Template.myCredits.helpers({

@@ -2,10 +2,12 @@
 
 <hr>
 <div class = "row">
-  <div class = "col-md-4 col-md-offset-4">
-    {{>classRoster}}
+  <div class = "col-md-12">
+    <input type = "checkbox" id = "filterByReassessmentStatus">Only those signed up?<br>
     <button class = "btn btn-primary" id = "assignQuiz">Assign</button>
     <button class = "btn btn-warning" id = "resetQuiz">Reset</button>
+    {{>classRoster}}
+
   </div>
   <div class = "col-md-4">
     {{#if quizzesAssigned}}
@@ -21,12 +23,28 @@
 
 
 <template name = "classRoster">
- <select multiple id = "classRosterNames">
 
-   {{#each student}}
-   <option value = "{{_id}}">{{profile.realName}}</option>
+ 
+
+ <div class = "row">
+   <div class = "row">
+   <div class = "col-md-4">
+   <select name = "date" id = "selectDate" class="form-control">
+   <option value =""  selected = "selected"></option>
+   {{#each reassessmentFoundDay}}
+   <option value="{{this}}" >{{this}}</option>
+
    {{/each}}
- </select>
+   </select></div>
+   </div>
+   <div class = "col-md-12" id = "reassessmentStudentList">
+     <table id = "reassessmentStudents">
+       {{#each reassessmentStudent}}
+       <tr><td><input type = "checkbox" class = "selectToAddQuiz"></td><td>{{getName this.user}}</td><td>{{this.unit}}^{{this.standard}}-{{this.grade}}-{{this.time}}</td></tr>
+       {{/each}}
+     </table>
+   </div>
+ </div>
 </template>
 
 <template name = "quizzesViewAll">

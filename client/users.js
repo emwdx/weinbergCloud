@@ -3,12 +3,12 @@
       Meteor.subscribe('users');
       Meteor.subscribe('credits');
       Meteor.subscribe('systemVariables');
-      Meteor.subscribe('reviewpages');
+      //Meteor.subscribe('reviewpages');
       Meteor.subscribe('standards');
+      //Meteor.subscribe('standard-links');
+      //Meteor.subscribe('weinbergcash');
       Meteor.subscribe('standard-links');
-      Meteor.subscribe('weinbergcash');
-      Meteor.subscribe('standard-links');
-      //Meteor.subscribe('questions');
+      Meteor.subscribe('questions');
       Meteor.subscribe('quizzes');
 
   }

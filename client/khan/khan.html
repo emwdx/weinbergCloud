@@ -1,4 +1,7 @@
 <template name = "listQuestions">
+
+  <div class = "row">
+  <div class = "col-md-8" id = "questionList">
     {{>courseUnitStandard}}
 
      {{#if Template.subscriptionsReady}}
@@ -19,7 +22,12 @@
       {{>loading}}
       {{/unless}}
 
+
+    </div>
+    <div class = "col-md-4">
       {{>assignQuiz}}
+    </div>
+  </div>
 
 </template>
 

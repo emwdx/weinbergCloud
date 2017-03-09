@@ -97,7 +97,7 @@
 <select name = "time" class = "reassessSelect form-control">
 <option value ="0" selected ="selected" ></option>
 <option value="Before School" >Before School</option>
-<option value="Lunch Activity" >During Lunch</option>
+<option value="During Lunch" >During Lunch</option>
 <option value="In-Class Quiz" >In-Class Quiz</option>
 <option value="After School">After School</option>
 <option value="Block D or G">Block D or G</option>
@@ -344,14 +344,14 @@ My completed reassessments:
 </template>
 
 <template name = "reassessmentAdminTemplate">
-<div class = "row reassessmentItem">
-
-<div class = "col-md-4">
+<div class = "row reassessmentItem {{assigned}} ">
+<div class = "row">
+<div class = "col-md-6">
 {{time}} on {{day}}
 <br>
 {{userName}}
 </div>
-<div class = "col-md-4">
+<div class = "col-md-6">
 
 
     {{course}} Standard {{unit}}.{{standard}}
@@ -360,13 +360,15 @@ My completed reassessments:
     Current Grade: {{grade}}
 
 </div>
-
-<div class = "col-md-4">
-<button class = "btn cancelReassessment btn-danger reassessmentButtonsAdmin">Cancel</button><button class = "btn editReassessment btn-info reassessmentButtonsAdmin">Edit</button>
-<button class = "btn completeReassessment btn-success reassessmentButtonsAdmin ">Done</button>
+</div>
+<div class = "row">
+<div class = "col-md-12">
+<button class = "btn cancelReassessment btn-danger reassessmentButtonsAdmin"><span class = "glyphicon glyphicon-remove"></span></button>
+<button class = "btn editReassessment btn-info reassessmentButtonsAdmin"><span class = "glyphicon glyphicon-pencil"></span></button>
+<button class = "btn completeReassessment btn-success reassessmentButtonsAdmin "><span class = "glyphicon glyphicon-ok"></span></button>
 </div>
 </div>
-
+</div>
 </template>
 
 <template name = "defaultPage">
@@ -386,12 +388,29 @@ My completed reassessments:
 {{/each}}
 </select></div>
 </div>
+<div class = "row">
+<div class = "col-md-4">
+  {{#each reassessmentsBeforeSchool}}
 
-{{#each reassessments}}
+          {{>reassessmentAdminTemplate}}
 
-        {{>reassessmentAdminTemplate}}
+  {{/each}}
+</div>
+<div class = "col-md-4">
+  {{#each reassessmentsDuringLunchClass}}
 
-{{/each}}
+          {{>reassessmentAdminTemplate}}
+
+  {{/each}}
+</div>
+<div class = "col-md-4">
+  {{#each reassessmentsAfterSchool}}
+
+          {{>reassessmentAdminTemplate}}
+
+  {{/each}}
+</div>
+</div>
 
 
 </template>
