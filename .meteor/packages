@@ -4,18 +4,19 @@
 # but you can also edit it by hand.
 
 standard-app-packages
-accounts-ui
-accounts-password
+accounts-ui@1.1.9
+accounts-password@1.3.4
 iron:router
 sacha:spin
-logic-solver
+logic-solver@2.0.7
 twbs:bootstrap
 alanning:roles
 useraccounts:bootstrap
 cfly15:manage-users
-reactive-var
+reactive-var@1.0.11
 sashko:katex
-underscore
-jquery
+underscore@1.0.10
+jquery@1.11.10
 clubfest:raphael
-standard-minifier-css
+standard-minifier-css@1.3.3
+shell-server

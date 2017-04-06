@@ -2,7 +2,7 @@ Template.quizzesViewAll.helpers({
 incompleteQuizzes:function(){
 
 
-return Quizzes.find({completed:false},{sort:{created:1}});
+return Quizzes.find({completed:false},{sort:{created:1},fields:{completed:true,standards:true,user:true,created:true,course:true}});
 
 },
 completeQuizzes:function(){

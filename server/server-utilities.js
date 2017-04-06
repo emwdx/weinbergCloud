@@ -9,26 +9,8 @@ else{return false}
  };
 
   Meteor.startup(function () {
-  if(ReviewPages.find().count()==0){
 
-   var users = Meteor.users.find( { "profile.grade": { $in: [ '9', '10' ] } } );
-   if(users){
-   users.forEach(function(person){
-   var page = { userId: person._id,
-               author: person.profile.realName,
-               submitted: new Date().getTime(),
-               standard: '',
-               grade: person.profile.grade,
-                url:'',
-                upvoters: [],
-                votes: 0
-                };
-
-  ReviewPages.insert(page);
-   });
-   }
-
-  }
+  
 
   if(!Meteor.roles.findOne({name: "teacher"}))
                         Roles.createRole("teacher");
@@ -88,7 +70,8 @@ else{return Questions.find()}
 
  Meteor.publish('standard-links', function() {
 
-     return Links.find({});
+     //return Links.find({});
+     return null;
 
 });
 
@@ -161,14 +144,17 @@ Meteor.publish('quizzes', function() {
      else{return null};
 });
 
+
 Meteor.publish('reviewpages',function(){
 
-    return ReviewPages.find({});
+    //return ReviewPages.find({});
+    return null;
 });
 
 Meteor.publish('weinbergcash',function(){
 
-  return WeinbergCash.find({});
+  //return WeinbergCash.find({});
+  return null;
 
 });
 

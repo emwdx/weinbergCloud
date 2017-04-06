@@ -1,0 +1,23 @@
+{
+  "name": "weinberg-cloud",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dbFunctions.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emwdx/weinbergCloud.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/emwdx/weinbergCloud/issues"
+  },
+  "homepage": "https://github.com/emwdx/weinbergCloud#readme",
+  "dependencies": {
+    "babel-runtime": "^6.23.0",
+    "bcrypt": "^1.0.2"
+  }
+}
